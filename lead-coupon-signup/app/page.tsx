@@ -66,11 +66,15 @@ export default function Home() {
 
   return (
     <main className={styles.page}>
-      <div className={styles.ribbon}>Italian market pickup list - 5% off your next $20+ order</div>
+      <div className={styles.ribbon}>Catch us at the market - 5% off your next $20+ order</div>
 
       <header className={styles.header}>
         <a className={styles.brand} href="https://casacrobu.com" aria-label="Casa Crobu home">
-          <span className={styles.logoMark}>CC</span>
+          <img
+            className={styles.logoImage}
+            src="https://casacrobu.com/cdn/shop/files/websitelogotransparent_e3945784-8899-4a2b-9751-c1b9ea06206a_360x.gif?v=1614774856"
+            alt=""
+          />
           <span>Casa Crobu</span>
         </a>
         <a className={styles.siteLink} href="https://casacrobu.com">
@@ -81,25 +85,25 @@ export default function Home() {
       <section className={styles.hero}>
         <div className={styles.copy}>
           <div className={styles.pill}>
-            <span aria-hidden="true">◇</span> Market list - exclusive offer
+            <span aria-hidden="true">◇</span> Market list - welcome offer
           </div>
           <h1>
-            <span>5% off</span> your next market order.
+            Join the market list. <span>Get 5% off.</span>
           </h1>
           <p className={styles.intro}>
-            Join the Casa Crobu market list to hear where we will be each week and unlock{" "}
+            Join the Casa Crobu Market Club to hear where we will be each week and unlock{" "}
             <strong>5% off any market order over $20.</strong> Lasagna, eggplant parmigiana, Sardinian
-            specialties, straight from our casa to yours.
+            specialties, and seasonal specialties straight from our casa to yours.
           </p>
           <ul className={styles.benefits}>
             <li>
-              <span aria-hidden="true">⌖</span> Weekly heads-up on where to find us
+              <span aria-hidden="true">⌖</span> Weekly market locations
             </li>
             <li>
-              <span aria-hidden="true">▣</span> First dibs on seasonal lasagna
+              <span aria-hidden="true">▣</span> Seasonal specials and preorder notes
             </li>
             <li>
-              <span aria-hidden="true">✓</span> Instant 5% off code by email or text
+              <span aria-hidden="true">✓</span> Your 5% off code by email or text
             </li>
           </ul>
         </div>
@@ -210,7 +214,12 @@ export default function Home() {
                     checked={form.smsOptIn}
                     onChange={(event) => updateField("smsOptIn", event.target.checked)}
                   />
-                  <span>Text me market updates and my 5% off code. Msg & data rates may apply. Reply STOP to opt out.</span>
+                  <span>
+                    Text me my 5% off code and occasional Casa Crobu market updates. By checking
+                    this box, I agree to receive recurring automated marketing text messages from
+                    Casa Crobu. Consent is not a condition of purchase. Msg & data rates may apply.
+                    Reply STOP to unsubscribe and HELP for help.
+                  </span>
                 </label>
                 <label>
                   <input
@@ -218,19 +227,19 @@ export default function Home() {
                     checked={form.emailOptIn}
                     onChange={(event) => updateField("emailOptIn", event.target.checked)}
                   />
-                  <span>Email me market updates and my 5% off code.</span>
+                  <span>Email me my 5% off code, weekly market locations, and occasional Casa Crobu updates.</span>
                 </label>
               </div>
 
               {submitError ? <p className={styles.submitError}>{submitError}</p> : null}
 
               <button className={styles.submitButton} type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Sending..." : "Send my 5% off code"}
+                {isSubmitting ? "Sending..." : "Join the market list"}
               </button>
 
               <p className={styles.finePrint}>
-                Offer valid on a single market order of $20 or more. One per customer. We will never
-                share your info.
+                Offer valid on one market order of $20 or more. One use per customer. Casa Crobu
+                will not sell or share your information.
               </p>
             </form>
           )}

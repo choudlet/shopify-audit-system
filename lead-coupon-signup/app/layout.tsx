@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Casa Crobu Market List",
-  description: "Join the Casa Crobu market list for updates and a 5% off code.",
+  title: "Casa Crobu Market Club",
+  description: "Join the Casa Crobu Market Club for market updates and a 5% off code.",
 };
 
 export default function RootLayout({
