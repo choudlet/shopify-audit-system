@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Casa Crobu: Market-to-Web Bridge</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --red: #8b1e24;
+            --gold: #d9b44a;
+            --green: #2f7d58;
+            --ink: #171717;
+            --paper: #fbfaf7;
+            --muted: #6d6a64;
+            --line: rgba(23, 23, 23, 0.14);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-snap-type: y mandatory;
+        }
+
+        body {
+            background: var(--paper);
+            color: var(--ink);
+            font-family: "Inter", sans-serif;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        .slide {
+            min-height: 100vh;
+            width: 100vw;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 2rem;
+            padding: 6rem 8vw;
+            border-bottom: 1px solid var(--line);
+            position: relative;
+        }
+
+        .slide.dark {
+            background: #181514;
+            color: var(--paper);
+        }
+
+        .slide.dark .eyebrow,
+        .slide.dark .source-note,
+        .slide.dark .muted {
+            color: #d8d1c3;
+        }
+
+        .kicker {
+            align-items: center;
+            color: var(--red);
+            display: flex;
+            font-size: 0.78rem;
+            font-weight: 800;
+            gap: 0.75rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .kicker::before {
+            background: currentColor;
+            content: "";
+            height: 2px;
+            width: 42px;
+        }
+
+        h1,
+        h2 {
+            font-family: "Playfair Display", serif;
+            font-weight: 700;
+            letter-spacing: 0;
+            line-height: 1.05;
+        }
+
+        h1 {
+            font-size: clamp(3rem, 8vw, 6.8rem);
+            max-width: 1100px;
+        }
+
+        h2 {
+            font-size: clamp(2.4rem, 5vw, 4.8rem);
+            max-width: 1050px;
+        }
+
+        h3 {
+            font-size: 1.35rem;
+            line-height: 1.2;
+        }
+
+        p {
+            font-size: clamp(1.05rem, 2vw, 1.45rem);
+            max-width: 900px;
+        }
+
+        .lede {
+            font-size: clamp(1.25rem, 2.6vw, 2rem);
+            max-width: 1000px;
+        }
+
+        .muted {
+            color: var(--muted);
+        }
+
+        .highlight {
+            color: var(--red);
+        }
+
+        .dark .highlight {
+            color: var(--gold);
+        }
+
+        .metrics-grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            width: 100%;
+        }
+
+        .metrics-grid.three {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .metric-card {
+            border: 1px solid var(--line);
+            border-left: 6px solid var(--gold);
+            border-radius: 8px;
+            min-height: 160px;
+            padding: 1.25rem;
+        }
+
+        .dark .metric-card {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.18);
+            border-left-color: var(--gold);
+        }
+
+        .metric-value {
+            display: block;
+            font-size: clamp(2.2rem, 4vw, 4rem);
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 0.75rem;
+        }
+
+        .metric-label {
+            color: var(--muted);
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .dark .metric-label {
+            color: #d8d1c3;
+        }
+
+        .metric-card p {
+            font-size: 1rem;
+            margin-top: 0.75rem;
+        }
+
+        .two-col {
+            display: grid;
+            gap: 2rem;
+            grid-template-columns: 0.9fr 1.1fr;
+            width: 100%;
+        }
+
+        .panel {
+            border-left: 6px solid var(--red);
+            padding-left: 1.25rem;
+        }
+
+        .dark .panel {
+            border-left-color: var(--gold);
+        }
+
+        .big-number {
+            color: var(--red);
+            display: block;
+            font-size: clamp(4rem, 12vw, 10rem);
+            font-weight: 800;
+            letter-spacing: 0;
+            line-height: 0.95;
+        }
+
+        .dark .big-number {
+            color: var(--gold);
+        }
+
+        table {
+            border-collapse: collapse;
+            font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+            width: 100%;
+        }
+
+        th,
+        td {
+            border-bottom: 1px solid var(--line);
+            padding: 0.85rem 0.75rem;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            color: var(--red);
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .dark th,
+        .dark td {
+            border-bottom-color: rgba(255, 255, 255, 0.18);
+        }
+
+        .dark th {
+            color: var(--gold);
+        }
+
+        .timeline {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        .timeline-step {
+            border-top: 6px solid var(--gold);
+            padding-top: 1rem;
+        }
+
+        .timeline-step p {
+            font-size: 1rem;
+            margin-top: 0.75rem;
+        }
+
+        .pill-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.7rem;
+            max-width: 1000px;
+        }
+
+        .pill {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            font-weight: 700;
+            padding: 0.6rem 0.8rem;
+        }
+
+        .dark .pill {
+            border-color: rgba(255, 255, 255, 0.22);
+        }
+
+        .source-note {
+            bottom: 2rem;
+            color: var(--muted);
+            font-size: 0.8rem;
+            left: 8vw;
+            max-width: 80vw;
+            position: absolute;
+        }
+
+        @media (max-width: 900px) {
+            html {
+                scroll-snap-type: none;
+            }
+
+            .slide {
+                min-height: auto;
+                padding: 4rem 1.25rem;
+            }
+
+            .metrics-grid,
+            .metrics-grid.three,
+            .two-col,
+            .timeline {
+                grid-template-columns: 1fr;
+            }
+
+            .source-note {
+                margin-top: 2rem;
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+    <section class="slide dark">
+        <div class="kicker">Confidential Audit</div>
+        <h1>Casa Crobu Market Capture Pilot</h1>
+        <p class="lede">A summer market plan to capture customers, learn what works at the booth, and convert that audience into fall delivery demand.</p>
+    </section>
+
+    <section class="slide">
+        <div class="kicker">May 2024 - March 2026</div>
+        <h2>The market demand is proven. The follow-up system is missing.</h2>
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <span class="metric-value">36,031</span>
+                <span class="metric-label">Orders analyzed</span>
+                <p>Across POS, web, and draft-order channels.</p>
+            </div>
+            <div class="metric-card">
+                <span class="metric-value">$1.59M</span>
+                <span class="metric-label">Total order-level revenue</span>
+                <p>Across POS, web, and draft orders; POS revenue is $1.17M.</p>
+            </div>
+            <div class="metric-card">
+                <span class="metric-value">83.25%</span>
+                <span class="metric-label">All orders anonymous</span>
+                <p>29,995 total orders have no email attached.</p>
+            </div>
+            <div class="metric-card">
+                <span class="metric-value">91.62%</span>
+                <span class="metric-label">POS orders anonymous</span>
+                <p>29,621 POS orders have no customer record.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide dark">
+        <div class="kicker">The Problem To Solve</div>
+        <h2>Out of 32,330 POS orders, <span class="highlight">29,621</span> are anonymous.</h2>
+        <div class="two-col">
+            <div class="metric-card">
+                <span class="metric-value">8.38%</span>
+                <span class="metric-label">Known POS order share</span>
+                <p>Only 2,709 POS orders have an email or Shopify customer profile attached. This is not active booth capture yet.</p>
+            </div>
+            <div class="panel">
+                <h3>What that means operationally</h3>
+                <p>Casa Crobu cannot follow up with most market buyers, measure repeat behavior, learn which markets are working, or move shoppers into online ordering and delivery offers.</p>
+                <p class="muted">For anonymous buyers, we do not know who they are, how many times they came back, what they bought over time, or which offers would have brought them online.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide">
+        <div class="kicker">Known Vs Unknown</div>
+        <h2>For anonymous market orders, average order value is almost all we know.</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Segment</th>
+                    <th>Orders</th>
+                    <th>Average Order Value</th>
+                    <th>Known Customers</th>
+                    <th>Repeat Behavior</th>
+                    <th>Customer LTV</th>
+                    <th>What it means</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Anonymous Market Orders</td>
+                    <td>29,621</td>
+                    <td>$35.73</td>
+                    <td>?</td>
+                    <td>?</td>
+                    <td>?</td>
+                    <td>We cannot reliably follow up, measure repeat visits, or connect market behavior to online conversion.</td>
+                </tr>
+                <tr>
+                    <td>Known Market Only</td>
+                    <td>2,405</td>
+                    <td>$39.22</td>
+                    <td>1,827</td>
+                    <td>1.32 orders / customer</td>
+                    <td>$51.63</td>
+                    <td>They bought at market and are identifiable, but not yet online buyers.</td>
+                </tr>
+                <tr>
+                    <td>Online Only</td>
+                    <td>2,912</td>
+                    <td>$114.72</td>
+                    <td>1,368</td>
+                    <td>2.13 orders / customer</td>
+                    <td>$244.20</td>
+                    <td>They have stronger repeat behavior and higher average LTV.</td>
+                </tr>
+                <tr>
+                    <td>Known Market + Online</td>
+                    <td>677</td>
+                    <td>$87.52</td>
+                    <td>154</td>
+                    <td>4.40 orders / customer</td>
+                    <td>$384.76</td>
+                    <td>These customers are about 7.5x more valuable than Known Market Only.</td>
+                </tr>
+            </tbody>
+        </table>
+        <p class="source-note">AOV is order-level. Customer counts, repeat behavior, and LTV require an email/customer record, which anonymous POS orders do not have.</p>
+    </section>
+
+    <section class="slide">
+        <div class="kicker">Opportunity Model</div>
+        <h2>Even the base-case opportunity is meaningful.</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Scenario</th>
+                    <th>New Contacts</th>
+                    <th>Online Buyers</th>
+                    <th>Base LTV Upside</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Capture 5% of anonymous POS orders; 5% convert online</td>
+                    <td>1,481</td>
+                    <td>74</td>
+                    <td>About $24.7K</td>
+                </tr>
+                <tr>
+                    <td>Capture 10%; 10% convert online</td>
+                    <td>2,962</td>
+                    <td>296</td>
+                    <td>About $98.7K</td>
+                </tr>
+                <tr>
+                    <td>Capture 15%; 10% convert online</td>
+                    <td>4,443</td>
+                    <td>444</td>
+                    <td>About $148.0K</td>
+                </tr>
+                <tr>
+                    <td>Capture 20%; 10% convert online</td>
+                    <td>5,924</td>
+                    <td>592</td>
+                    <td>About $197.4K</td>
+                </tr>
+            </tbody>
+        </table>
+        <p class="source-note">Formula: 29,621 anonymous POS orders x capture rate x online conversion rate x the observed customer value gap. That gap is $384.76 Known Market + Online LTV minus $51.63 Known Market Only LTV, or $333.13. Anonymous orders are the proxy base because shopper-level identity is missing. Recurring delivery or subscription behavior would be upside beyond this base model.</p>
+    </section>
+
+    <section class="slide">
+        <div class="kicker">How We Solve This</div>
+        <h2>Build the system in four connected steps.</h2>
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <span class="metric-value">1</span>
+                <span class="metric-label">Capture</span>
+                <p>Lid Stickers + Market QR Codes give market shoppers a simple reason to identify themselves.</p>
+            </div>
+            <div class="metric-card">
+                <span class="metric-value">2</span>
+                <span class="metric-label">Consent</span>
+                <p>Collect email first, make SMS optional, and route new signups into Klaviyo with the right consent status.</p>
+            </div>
+            <div class="metric-card">
+                <span class="metric-value">3</span>
+                <span class="metric-label">Activate</span>
+                <p>Use the welcome flow and monthly summer offers to train the list to open, click, and redeem.</p>
+            </div>
+            <div class="metric-card">
+                <span class="metric-value">4</span>
+                <span class="metric-label">Convert To Delivery</span>
+                <p>Turn summer response data into personalized fall delivery bundles, freezer-stock boxes, and recurring order tests.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="slide">
+        <div class="kicker">Pilot Proposal</div>
+        <h2>Start with Lid Stickers + Market QR Codes that feed into the right email/SMS system.</h2>
+        <div class="metrics-grid three">
+            <div class="metric-card">
+                <span class="metric-value">QR</span>
+                <span class="metric-label">Mechanism</span>
+                <p>Lid Stickers + Market QR Codes: a QR/tap-to-text path to join the Casa Crobu market list.</p>
+            </div>
+            <div class="metric-card">
+                <span class="metric-value">Offer</span>
+                <span class="metric-label">Initial offer</span>
+                <p>A simple signup reward. Bolognese is a strong first offer candidate, but we choose based on margin and budget.</p>
+            </div>
+            <div class="metric-card">
+                <span class="metric-value">Learn</span>
+                <span class="metric-label">Learn</span>
+                <p>Track which market each signup came from so we can see what works and make better fall delivery offers.</p>
+            </div>
+        </div>
+        <p class="source-note">Recommended path is Klaviyo if account setup and cost make sense. A lighter Shopify-first path is possible if we want to keep the first test simpler. SMS opt-ins need disclosure language, privacy policy and terms links, STOP/HELP instructions, and consent-not-required language.</p>
+    </section>
+
+    <section class="slide">
+        <div class="kicker">Consent + Activation</div>
+        <h2>Build the funnel and activate it at the same time.</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Audience</th>
+                    <th>Consent Handling</th>
+                    <th>First Message</th>
+                    <th>Next Step</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Existing email-consented customers</td>
+                    <td>Port from Shopify into Klaviyo and segment by known behavior: market only, online only, market + online.</td>
+                    <td>Summer market kickoff: join the market list and tell customers what updates to expect.</td>
+                    <td>Monthly market offers and fall delivery transition.</td>
+                </tr>
+                <tr>
+                    <td>Existing customers without marketing consent</td>
+                    <td>Do not add to marketing blasts. Re-permission through compliant opt-in at future checkout or market QR path.</td>
+                    <td>No marketing message until they opt in.</td>
+                    <td>Capture consent in the new funnel.</td>
+                </tr>
+                <tr>
+                    <td>New market signups</td>
+                    <td>QR/tap-to-text form collects explicit email and/or SMS consent and tags source market.</td>
+                    <td>Immediate welcome message with the first offer or market-list confirmation.</td>
+                    <td>Segmented monthly offer and online/delivery follow-up.</td>
+                </tr>
+                <tr>
+                    <td>SMS contacts</td>
+                    <td>Only message people with explicit SMS consent. Email consent does not equal SMS consent.</td>
+                    <td>Short confirmation with value, link, and STOP language.</td>
+                    <td>Weekly market specials, with or without offers, while monitoring opt-outs and reply behavior.</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="slide dark">
+        <div class="kicker">Sample Summer Flow</div>
+        <h2>The market list should get more valuable all summer.</h2>
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <span class="metric-value">Opt-in</span>
+                <span class="metric-label">Welcome + Consent</span>
+                <p>You're on the Casa Crobu market list. We'll send market specials, preorder drops, and delivery updates. Reply STOP to opt out.</p>
+            </div>
+            <div class="metric-card">
+                <span class="metric-value">Deal</span>
+                <span class="metric-label">Pizzetta Deal</span>
+                <p>Test a simple market-list offer or preorder hook that teaches shoppers there is a reason to open Casa Crobu messages.</p>
+            </div>
+            <div class="metric-card">
+                <span class="metric-value">Weekly</span>
+                <span class="metric-label">Weekly Market Special</span>
+                <p>Example: City Park special or pre-reserve test for the week, with or without a discount, while watching clicks, redemptions, replies, and unsubscribes.</p>
+            </div>
+            <div class="metric-card">
+                <span class="metric-value">Fall</span>
+                <span class="metric-label">Fall Delivery Offer</span>
+                <p>Send a summer thank-you and wind-down flow, then move customers into personalized fall delivery bundles or recurring order tests.</p>
+            </div>
+        </div>
+        <p class="source-note">Final copy should be reviewed against Klaviyo SMS disclosure setup and Casa Crobu's privacy/terms pages before launch.</p>
+    </section>
+
+    <section class="slide">
+        <div class="kicker">What We Learn This Summer</div>
+        <h2>Use summer engagement to build a smarter fall delivery offer.</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Signal</th>
+                    <th>What We Learn</th>
+                    <th>How It Shapes Fall</th>
+                    <th>Measured In</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>QR and signup source</td>
+                    <td>Which markets, sticker placements, and staff prompts create the most opt-ins.</td>
+                    <td>Focus the fall push on the audiences and markets already responding.</td>
+                    <td>Klaviyo source tags + Shopify POS counts</td>
+                </tr>
+                <tr>
+                    <td>Offer response</td>
+                    <td>Whether shoppers respond better to pizzetta deals, preorder hooks, bundles, or threshold discounts.</td>
+                    <td>Use the winning offer style in the fall delivery launch.</td>
+                    <td>Clicks, redemptions, replies, and unsubscribes</td>
+                </tr>
+                <tr>
+                    <td>Product interest</td>
+                    <td>Which products get attention when we promote specials, preorders, or bundle previews.</td>
+                    <td>Create personalized freezer-stock boxes and delivery bundles around proven interest.</td>
+                    <td>Product clicks, discount usage, and online orders</td>
+                </tr>
+                <tr>
+                    <td>Delivery intent</td>
+                    <td>Who clicks delivery, preorder, freezer-stock, or recurring bundle messages before markets slow down.</td>
+                    <td>Send a summer thank-you and wind-down flow with a personalized fall delivery offer.</td>
+                    <td>Klaviyo segments + Shopify order history</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="slide">
+        <div class="kicker">What Gets Built</div>
+        <h2>The pilot turns the audit into a live capture system.</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Build</th>
+                    <th>Output</th>
+                    <th>Casa Crobu Decision</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Consent-ready list setup</td>
+                    <td>Import marketing-consented Shopify customers, separate non-consented customers, and tag the right audiences for activation.</td>
+                    <td>Confirm Shopify/Klaviyo access and which existing contacts can be messaged.</td>
+                </tr>
+                <tr>
+                    <td>Market opt-in funnel</td>
+                    <td>Signup page or form, QR path, source tags, first offer code, welcome message, and SMS consent language if used.</td>
+                    <td>Choose the first offer, SMS path, and pilot markets.</td>
+                </tr>
+                <tr>
+                    <td>Market assets</td>
+                    <td>Trackable Market QR Codes, lid sticker CTA copy, booth CTA copy, and print-ready handoff.</td>
+                    <td>Confirm market rules, approve copy, and print the assets.</td>
+                </tr>
+                <tr>
+                    <td>Learning loop</td>
+                    <td>Simple dashboard for opt-ins, redemptions, online orders, unsubscribes, and delivery-interest signals.</td>
+                    <td>Share staff feedback, inventory constraints, and which offers are realistic to test.</td>
+                </tr>
+            </tbody>
+        </table>
+        <p class="source-note">Final scope should be set after confirming Klaviyo access, SMS needs, pilot markets, offer budget, and print quantities.</p>
+    </section>
+
+    <section class="slide">
+        <div class="kicker">Success Benchmarks</div>
+        <h2>We will know the pilot is working when these numbers move.</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Initiative</th>
+                    <th>Metric</th>
+                    <th>Baseline</th>
+                    <th>Pilot Target</th>
+                    <th>Measured In</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Lid Stickers + Market QR Codes</td>
+                    <td>New market opt-ins as a share of POS orders</td>
+                    <td>No active booth capture system; historical known POS order share is 8.38%</td>
+                    <td>15-20% opt-in rate at pilot markets</td>
+                    <td>Klaviyo source tags + Shopify POS counts</td>
+                </tr>
+                <tr>
+                    <td>Email/SMS consent flow</td>
+                    <td>New email/SMS opt-ins</td>
+                    <td>No unified capture flow</td>
+                    <td>Clear weekly opt-in count by market</td>
+                    <td>Email/SMS list growth and consent status</td>
+                </tr>
+                <tr>
+                    <td>Monthly summer offers</td>
+                    <td>Click rate + redemption rate</td>
+                    <td>Not currently tracked by market list</td>
+                    <td>Identify one offer that earns repeat response</td>
+                    <td>Klaviyo clicks + Shopify discount usage</td>
+                </tr>
+                <tr>
+                    <td>Market-to-online transition</td>
+                    <td>First online order from market signups</td>
+                    <td>Not currently tracked from new market signups</td>
+                    <td>Drive first online orders before the fall delivery push</td>
+                    <td>Shopify order source + customer profile history</td>
+                </tr>
+                <tr>
+                    <td>Fall delivery offer</td>
+                    <td>Delivery bundle purchases or recurring offer signups</td>
+                    <td>New test</td>
+                    <td>Validated fall offer before markets slow down</td>
+                    <td>Shopify products, discounts, and Klaviyo campaigns</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <section class="slide dark">
+        <div class="kicker">Cost And Setup</div>
+        <h2>If the strategy feels right, we can scope the pilot in phases.</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Phase</th>
+                    <th>Planning Range</th>
+                    <th>What It Covers</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Data dive</td>
+                    <td>$500 for the current audit.</td>
+                    <td>About 8 hours of audit work: data cleaning, order-level revenue correction, customer segmentation, findings, and pilot recommendations.</td>
+                </tr>
+                <tr>
+                    <td>Focused pilot setup</td>
+                    <td>Likely $1,500-$2,500 after confirming scope.</td>
+                    <td>Email/SMS system setup, consent handling, QR/sticker funnel, first offer, welcome flow, source tracking, and launch dashboard.</td>
+                </tr>
+                <tr>
+                    <td>Optional summer activation</td>
+                    <td>Likely $1,000-$1,500/month if I own weekly support.</td>
+                    <td>Weekly specials, pre-reserve tests, unsubscribe monitoring, reporting, offer learning, and the fall delivery transition.</td>
+                </tr>
+                <tr>
+                    <td>Platform path</td>
+                    <td>Klaviyo recommended; Shopify-first path possible.</td>
+                    <td>Klaviyo is better for segmentation, flows, source tags, and personalized delivery offers. Shopify-first can keep the first test simpler if cost or setup is a concern.</td>
+                </tr>
+                <tr>
+                    <td>Client costs</td>
+                    <td>Klaviyo/software, print assets, and offer budget are separate.</td>
+                    <td>Print assets may land around $75-$250 for pilot stickers/signage. Offer could be 10-15% off, $10 off $60+, or a free add-on with a threshold.</td>
+                </tr>
+                <tr>
+                    <td>Later media tests</td>
+                    <td>Save for later.</td>
+                    <td>Meta retargeting or lookalike tests only after the list is large enough and the fall offer is proven.</td>
+                </tr>
+            </tbody>
+        </table>
+        <p class="source-note">Main decision today: whether the pilot is worth scoping. Exact budget should be finalized after confirming Klaviyo access, SMS needs, pilot markets, offer budget, and print quantities.</p>
+    </section>
+
+    <section class="slide dark">
+        <div class="kicker">Questions</div>
+        <h2>What would make this feel worth piloting?</h2>
+        <p class="lede">The main thing to decide today is whether the problem and pilot direction feel right. If yes, I can turn this into a tighter scope, timeline, and launch budget.</p>
+    </section>
+</body>
+</html>

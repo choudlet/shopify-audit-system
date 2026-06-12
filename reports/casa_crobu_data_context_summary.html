@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Casa Crobu Data Context + Discovery Summary</title>
+  <style>
+    body {
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.5;
+      margin: 40px;
+      color: #111;
+    }
+    h1, h2 {
+      font-family: Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      margin-bottom: 0.3em;
+    }
+    h1 {
+      font-size: 24pt;
+      margin-top: 0;
+    }
+    h2 {
+      font-size: 15pt;
+      margin-top: 1.5em;
+    }
+    p {
+      margin: 0.55em 0;
+    }
+    ul {
+      margin: 0.4em 0 0.8em 1.3em;
+    }
+    li {
+      margin: 0.25em 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.8em 0 1.2em 0;
+    }
+    th, td {
+      border: 1px solid #444;
+      padding: 10px;
+      vertical-align: top;
+      text-align: left;
+    }
+    th {
+      font-family: Helvetica, Arial, sans-serif;
+      font-weight: 700;
+      background: #efefef;
+    }
+    .label {
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body>
+  <h1>Casa Crobu Data Context + Discovery Summary</h1>
+
+  <h2>Purpose of This Work</h2>
+  <p>Before making a recommendation about market capture, customer follow-up, or summer pilot setup, it was necessary to review the current data environment and establish a baseline that was usable for decision-making.</p>
+  <p>This discovery work was not just a reporting exercise. It was needed to understand what the current Shopify and POS data could reliably tell us, where customer visibility breaks down, and what kind of infrastructure would need to be built next.</p>
+
+  <h2>What Was Reviewed</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Area</th>
+        <th>Discovery Work Completed</th>
+        <th>What It Established</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Data scope</td>
+        <td>Reviewed Shopify order export data covering May 2024 through March 2026.</td>
+        <td>A usable historical window for evaluating market, web, and repeat-order behavior.</td>
+      </tr>
+      <tr>
+        <td>Data cleanup</td>
+        <td>Cleaned the export structure, corrected order-level logic, and removed distortion caused by Shopify's line-item export format.</td>
+        <td>A more reliable baseline for revenue, order counts, customer segmentation, and LTV comparisons.</td>
+      </tr>
+      <tr>
+        <td>Customer identity review</td>
+        <td>Separated anonymous orders from known customer records and compared POS-only, web-only, and cross-channel customer behavior.</td>
+        <td>Visibility into how much customer demand is currently measurable versus untracked.</td>
+      </tr>
+      <tr>
+        <td>Opportunity analysis</td>
+        <td>Reviewed channel behavior, repeat patterns, and the relationship between market purchasing and later online buying.</td>
+        <td>The baseline needed to recommend a market capture pilot instead of a generic marketing push.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Baseline Findings</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Metric</th>
+        <th>Finding</th>
+        <th>Why It Matters</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Orders analyzed</td>
+        <td>36,031 historical orders and approximately $1.59M in order-level revenue were reviewed.</td>
+        <td>This gave enough volume to evaluate market demand, customer identification gaps, and cross-channel behavior.</td>
+      </tr>
+      <tr>
+        <td>Anonymous order rate</td>
+        <td>83.25% of all orders, or 29,995 orders, had no email attached.</td>
+        <td>Most customer demand is not currently tied to a contactable audience.</td>
+      </tr>
+      <tr>
+        <td>POS identity gap</td>
+        <td>91.62% of POS orders, or 29,621 orders, had no email attached.</td>
+        <td>The market channel is generating demand, but most of it is not being captured into a usable customer record.</td>
+      </tr>
+      <tr>
+        <td>Known but underused market customers</td>
+        <td>1,827 known customers had an email from POS activity but had never purchased online.</td>
+        <td>There is already a meaningful audience that could be reactivated or transitioned into delivery demand.</td>
+      </tr>
+      <tr>
+        <td>Cross-channel bridge</td>
+        <td>Only 154 known customers had purchased both through market/POS and online.</td>
+        <td>The bridge from market traffic to digital retention currently exists, but at a very small scale.</td>
+      </tr>
+      <tr>
+        <td>Customer value difference</td>
+        <td>Known market-only customers averaged about $51.63 in LTV, while known market-plus-online customers averaged about $384.76.</td>
+        <td>Customers who move from market purchasing into online behavior are materially more valuable over time.</td>
+      </tr>
+      <tr>
+        <td>Seasonal revenue pattern</td>
+        <td>In 2025, off-season revenue was roughly 60% lower than market-season revenue.</td>
+        <td>The summer market season creates demand, but the business needs better capture and follow-up if it wants to carry more of that value into non-market months.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Important Data Context</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Context</th>
+        <th>What It Means</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Shopify exports are line-item based</td>
+        <td>Order totals and customer fields repeat across line items, so the audit had to correct to order level before revenue and LTV could be interpreted accurately.</td>
+      </tr>
+      <tr>
+        <td>Anonymous orders are not unique people</td>
+        <td>The anonymous order counts show the scale of the visibility problem, but they should be read as order volume, not guaranteed unique customer count.</td>
+      </tr>
+      <tr>
+        <td>Attribution is currently limited</td>
+        <td>When market shoppers are not attached to a customer profile, Casa Crobu cannot reliably measure repeat visits, later online conversion, or which specific markets drive the best long-term outcomes.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>What the Discovery Work Clarified</h2>
+  <p>The audit established that the opportunity is not a lack of demand. The opportunity is a lack of customer capture, identity resolution, and follow-up infrastructure around already proven demand.</p>
+  <p>That is why the recommended next step is not just "send more marketing." The logical next step is to build the capture and follow-up system that allows Casa Crobu to turn summer market traffic into a known, consented audience that can be used later for segmentation, retention, and fall delivery conversion.</p>
+
+  <h2>How This Connects to Phase 1</h2>
+  <p>Phase 1 is designed to build on this baseline by improving:</p>
+  <ul>
+    <li>customer capture at market,</li>
+    <li>email and optional SMS consent collection,</li>
+    <li>source tagging and segmentation,</li>
+    <li>welcome follow-up,</li>
+    <li>and basic attribution and reporting.</li>
+  </ul>
+  <p>In short, the data audit explains the baseline, and Phase 1 is the first step toward improving it.</p>
+</body>
+</html>
