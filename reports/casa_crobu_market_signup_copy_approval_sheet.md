@@ -1,411 +1,496 @@
-# Casa Crobu Market Signup Copy Approval Sheet
+# Casa Crobu Market Club Handoff And Approval Sheet
 
-**Date:** 2026-06-12  
-**Purpose:** Collect the customer-facing copy Casa Crobu should approve or edit before launching the market signup/coupon flow.
+**Date:** 2026-06-14  
+**Purpose:** Confirm what we decided during discovery, show how the Market Club signup will work, and list what still needs Kelly's approval before launch prep begins.
 
-This is a working approval sheet, not legal advice. SMS and email consent language should be reviewed against Casa Crobu's current privacy policy, terms, messaging provider requirements, and any market-specific rules before launch.
-
----
-
-## 1. Approval Checklist
-
-| Area | Current recommendation | Casa Crobu approval |
-|---|---|---|
-| Offer | `5% off your next market order of $20 or more` | |
-| Signup name | `Casa Crobu market list` | |
-| Primary CTA | `Send my 5% off code` | |
-| Email opt-in | Optional checkbox | |
-| SMS opt-in | Optional checkbox with consent language | |
-| Coupon code | Static code for MVP, sent by Make/SMS/email | |
-| Coupon limits | One per customer; valid on one market order of $20+ | |
-| Markets to list/use | Start generic; optionally create market-specific links later | |
-| Sender voice | Warm, direct, simple, Italian market feel | |
-| Legal links | Privacy policy and terms links to be confirmed | |
+This closes the discovery and build-finalization work. The next step would be launch activation: QR codes, staff training, SMS approval follow-through, final testing, and first-market rollout.
 
 ---
 
-## 2. Landing Page Copy
+## 1. What We Have Decided
+
+### Market Club Page
+
+The Market Club signup will live on the Casa Crobu site here:
+
+```text
+https://casacrobu.com/pages/market-club
+```
+
+That page will show the signup form we built here:
+
+```text
+https://shopify-audit-system.vercel.app/
+```
+
+The Vercel page is the working form. The Casa Crobu page is where customers will see it on the live site.
+
+### What The Form Will Collect
+
+The form will collect:
+
+- first name
+- last name
+- email
+- phone number
+- optional notes
+- email opt-in
+- SMS opt-in
+- where the signup came from
+
+For QR codes tied to a specific market, the market can be built into the link. For general links, the form will ask customers where they found Casa Crobu.
+
+### Shopify Customer Records
+
+Every signup will create or update a Shopify customer.
+
+This matters because Casa Crobu keeps the customer record in Shopify, not in a separate form app. That gives Kelly and the team one place to find the customer later.
+
+### Shopify Tags
+
+The system will add tags that make the signups searchable in Shopify.
+
+Core tags:
+
+```text
+market_club
+welcome_offer_5_off_20
+casa_crobu
+source_custom_landing_page
+```
+
+Source tags:
+
+```text
+source_location_south_pearl_street_market
+source_channel_product_sticker
+source_channel_booth_code
+source_channel_shopify_page
+source_channel_instagram
+campaign_summer_2026
+```
+
+Opt-in tags:
+
+```text
+email_opt_in
+sms_opt_in
+```
+
+Those opt-in tags are only added when the customer gives that contact method and checks the matching box.
+
+### SMS
+
+We will use Twilio for SMS.
+
+The form is already set up to send the welcome SMS through Twilio after a customer joins, but production SMS sending should wait until Twilio finishes approving the toll-free number.
+
+### Email
+
+Email capture is included.
+
+The open question is how the first welcome email should be sent. My recommendation is to keep ongoing email management in Shopify, using Shopify customer tags and Shopify Email/Campaigns.
+
+### Offer Redemption
+
+The recommended redemption flow is simple:
+
+1. Customer joins the Market Club.
+2. Customer receives the welcome code by SMS and/or email.
+3. Customer shows the text or email at the booth.
+4. Staff applies the welcome offer at checkout.
+
+Staff instruction:
+
+> If a customer shows MARKET5 from the Market Club text or email, apply 5% off one market order of $20 or more.
+
+---
+
+## 2. How The Flow Works
+
+```text
+Customer scans a QR code or visits the Market Club page
+→ Customer fills out the form
+→ Shopify customer is created or updated
+→ Shopify tags are added
+→ Customer receives the welcome offer by SMS and/or email
+→ Customer shows the code at the booth
+→ Staff applies the discount at checkout
+```
+
+### If The Customer Opts Into SMS
+
+```text
+Customer checks SMS box
+→ phone number is saved on the Shopify customer
+→ sms_opt_in tag is added
+→ Twilio sends the welcome text after approval
+```
+
+### If The Customer Opts Into Email
+
+```text
+Customer checks email box
+→ email is saved on the Shopify customer
+→ email_opt_in tag is added
+→ customer can receive the welcome email or later Shopify Email campaigns
+```
+
+### If The Link Includes A Market
+
+```text
+QR link includes location
+→ customer does not have to choose a market
+→ Shopify gets a location tag automatically
+```
+
+Example:
+
+```text
+https://casacrobu.com/pages/market-club?location=South%20Pearl%20Street%20Market&channel=booth_code&campaign=summer-2026
+```
+
+### If The Link Does Not Include A Market
+
+```text
+Customer sees a dropdown
+→ customer chooses where they found Casa Crobu
+→ Shopify gets a location tag from that choice
+```
+
+This is useful for the website, Instagram, and other general links.
+
+### Launch Link Matrix
+
+For launch, the customer-facing links should use Casa Crobu's page URL:
+
+```text
+https://casacrobu.com/pages/market-club
+```
+
+The source details are added after the `?`.
+
+#### Generic Links
+
+| Use | Link |
+|---|---|
+| Website page | `https://casacrobu.com/pages/market-club?channel=shopify_page&campaign=summer-2026` |
+| Instagram / link in bio | `https://casacrobu.com/pages/market-club?channel=instagram&campaign=summer-2026` |
+
+These links do not include a location, so customers will choose a location from the dropdown.
+
+#### Booth Code Links
+
+Use these for booth signage, counter signs, table tents, or checkout signs.
+
+| Location | Link |
+|---|---|
+| Belleview Station DTC | `https://casacrobu.com/pages/market-club?location=Belleview%20Station%20DTC&channel=booth_code&campaign=summer-2026` |
+| Boulder Farmers Market | `https://casacrobu.com/pages/market-club?location=Boulder%20Farmers%20Market&channel=booth_code&campaign=summer-2026` |
+| Central Park | `https://casacrobu.com/pages/market-club?location=Central%20Park&channel=booth_code&campaign=summer-2026` |
+| City Park | `https://casacrobu.com/pages/market-club?location=City%20Park&channel=booth_code&campaign=summer-2026` |
+| Festival Park | `https://casacrobu.com/pages/market-club?location=Festival%20Park&channel=booth_code&campaign=summer-2026` |
+| Gluten Free Market | `https://casacrobu.com/pages/market-club?location=Gluten%20Free%20Market&channel=booth_code&campaign=summer-2026` |
+| Golden | `https://casacrobu.com/pages/market-club?location=Golden&channel=booth_code&campaign=summer-2026` |
+| Harvey Park | `https://casacrobu.com/pages/market-club?location=Harvey%20Park&channel=booth_code&campaign=summer-2026` |
+| Highlands | `https://casacrobu.com/pages/market-club?location=Highlands&channel=booth_code&campaign=summer-2026` |
+| Lafayette | `https://casacrobu.com/pages/market-club?location=Lafayette&channel=booth_code&campaign=summer-2026` |
+| Longmont Farmer's Market | `https://casacrobu.com/pages/market-club?location=Longmont%20Farmer%27s%20Market&channel=booth_code&campaign=summer-2026` |
+| Louisville | `https://casacrobu.com/pages/market-club?location=Louisville&channel=booth_code&campaign=summer-2026` |
+| Parker | `https://casacrobu.com/pages/market-club?location=Parker&channel=booth_code&campaign=summer-2026` |
+| South Pearl Street Market | `https://casacrobu.com/pages/market-club?location=South%20Pearl%20Street%20Market&channel=booth_code&campaign=summer-2026` |
+| Thornton | `https://casacrobu.com/pages/market-club?location=Thornton&channel=booth_code&campaign=summer-2026` |
+| Westminster | `https://casacrobu.com/pages/market-club?location=Westminster&channel=booth_code&campaign=summer-2026` |
+
+#### Product Sticker Links
+
+Use these for product stickers, packaging, lid stickers, bag inserts, or take-home materials.
+
+| Location | Link |
+|---|---|
+| Belleview Station DTC | `https://casacrobu.com/pages/market-club?location=Belleview%20Station%20DTC&channel=product_sticker&campaign=summer-2026` |
+| Boulder Farmers Market | `https://casacrobu.com/pages/market-club?location=Boulder%20Farmers%20Market&channel=product_sticker&campaign=summer-2026` |
+| Central Park | `https://casacrobu.com/pages/market-club?location=Central%20Park&channel=product_sticker&campaign=summer-2026` |
+| City Park | `https://casacrobu.com/pages/market-club?location=City%20Park&channel=product_sticker&campaign=summer-2026` |
+| Festival Park | `https://casacrobu.com/pages/market-club?location=Festival%20Park&channel=product_sticker&campaign=summer-2026` |
+| Gluten Free Market | `https://casacrobu.com/pages/market-club?location=Gluten%20Free%20Market&channel=product_sticker&campaign=summer-2026` |
+| Golden | `https://casacrobu.com/pages/market-club?location=Golden&channel=product_sticker&campaign=summer-2026` |
+| Harvey Park | `https://casacrobu.com/pages/market-club?location=Harvey%20Park&channel=product_sticker&campaign=summer-2026` |
+| Highlands | `https://casacrobu.com/pages/market-club?location=Highlands&channel=product_sticker&campaign=summer-2026` |
+| Lafayette | `https://casacrobu.com/pages/market-club?location=Lafayette&channel=product_sticker&campaign=summer-2026` |
+| Longmont Farmer's Market | `https://casacrobu.com/pages/market-club?location=Longmont%20Farmer%27s%20Market&channel=product_sticker&campaign=summer-2026` |
+| Louisville | `https://casacrobu.com/pages/market-club?location=Louisville&channel=product_sticker&campaign=summer-2026` |
+| Parker | `https://casacrobu.com/pages/market-club?location=Parker&channel=product_sticker&campaign=summer-2026` |
+| South Pearl Street Market | `https://casacrobu.com/pages/market-club?location=South%20Pearl%20Street%20Market&channel=product_sticker&campaign=summer-2026` |
+| Thornton | `https://casacrobu.com/pages/market-club?location=Thornton&channel=product_sticker&campaign=summer-2026` |
+| Westminster | `https://casacrobu.com/pages/market-club?location=Westminster&channel=product_sticker&campaign=summer-2026` |
+
+---
+
+## 3. Copy To Approve
 
 ### Top Bar
 
-Current:
-
-> Italian market pickup list - 5% off your next $20+ order
-
-Alternative:
-
-> Catch us at the market - 5% off your next $20+ order
-
-Needs approval:
-
-- Should this say `market pickup list`, `market list`, or another phrase?
-- Should `$20+ order` be written as `$20 or more` for clarity?
-
-### Logo / Brand
-
-Current:
-
-> Casa Crobu
-
-Needs approval:
-
-- Confirm use of the `CC` text mark for the standalone page.
-- Confirm whether Casa Crobu has an official logo file to use instead.
+```text
+Catch us at the market - 5% off your next $20+ order
+```
 
 ### Offer Badge
 
-Current:
+```text
+Market list - welcome offer
+```
 
-> Market list - exclusive offer
+### Headline
 
-Alternative:
+```text
+Join the market list. Get 5% off.
+```
 
-> Market list - welcome offer
+### Supporting Copy
 
-Needs approval:
+```text
+Join the Casa Crobu Market Club to hear where we will be each week and unlock 5% off any market order over $20. Lasagna, eggplant parmigiana, Sardinian specialties, and seasonal specialties straight from our casa to yours.
+```
 
-- Is `exclusive offer` true enough, or should it be softened to `welcome offer`?
+### Benefits
 
-### Main Headline
-
-Current:
-
-> 5% off your next market order.
-
-Alternative:
-
-> Join the market list. Get 5% off.
-
-Needs approval:
-
-- Confirm whether the offer applies only at markets or also online.
-- Confirm whether `next market order` is the right phrase customers will understand.
-
-### Supporting Paragraph
-
-Current:
-
-> Join the Casa Crobu market list to hear where we will be each week and unlock 5% off any market order over $20. Lasagna, eggplant parmigiana, Sardinian specialties, straight from our casa to yours.
-
-Alternative:
-
-> Join the Casa Crobu market list for weekly market locations, seasonal specials, and 5% off your next market order of $20 or more.
-
-Needs approval:
-
-- Confirm the product examples.
-- Confirm whether `straight from our casa to yours` fits the brand voice.
-- Confirm whether `over $20` should become `$20 or more`.
-
-### Benefit Bullets
-
-Current:
-
-1. Weekly heads-up on where to find us
-2. First dibs on seasonal lasagna
-3. Instant 5% off code by email or text
-
-Alternative:
-
-1. Weekly market locations
-2. Seasonal specials and preorder notes
-3. Your 5% off code by email or text
-
-Needs approval:
-
-- Are seasonal lasagna and preorder drops real enough to promise now?
-- Should the third bullet say `by email or text` only if the customer opts into those channels?
-
----
-
-## 3. Form Copy
+```text
+Weekly market locations
+Seasonal specials and preorder notes
+Your 5% off code by email or text
+```
 
 ### Form Heading
 
-Current:
+```text
+Claim your 5% off
+```
 
-> Claim your 5% off
+### Form Helper Text
 
-Alternative:
+```text
+Sign up below and we will send your code.
+```
 
-> Get your market code
+### Button
 
-Needs approval:
-
-- Is `Claim your 5% off` clear and on-brand?
-
-### Helper Text
-
-Current:
-
-> Sign up below and we will send your code.
-
-Alternative:
-
-> Tell us where to send your code and weekly market updates.
-
-Needs approval:
-
-- Should the form emphasize the code first, or the ongoing market updates?
-
-### Field Labels And Placeholders
-
-| Field | Label | Placeholder | Approval notes |
-|---|---|---|---|
-| First name | `First name` | `Maria` | Required |
-| Last name | `Last name` | `Rossi` | Optional |
-| Email | `Email` | `you@example.com` | Required if no phone |
-| Mobile number | `Mobile number` | `(555) 123-4567` | Required if no email |
-| Market/location | `Market or location` | `South Pearl Street` | Optional |
-| Notes | `Notes` | `Favorite dish, pickup note, or question` | Optional |
-
-Needs approval:
-
-- Should `Mobile number` be `Phone number`?
-- Should `Market or location` use actual market names in a dropdown later?
-- Should `Notes` stay on the MVP form, or should the form be shorter?
-
-### Submit Button
-
-Current:
-
-> Send my 5% off code
-
-Alternatives:
-
-> Join the market list
-
-> Get my code
-
-Needs approval:
-
-- Confirm the button should lead with the coupon rather than the list.
+```text
+Join the market list
+```
 
 ### Fine Print
 
-Current:
+```text
+Offer valid on one market order of $20 or more. One use per customer. Casa Crobu will not sell or share your information.
+```
 
-> Offer valid on a single market order of $20 or more. One per customer. We will never share your info.
+### Success Message
 
-Alternative:
+```text
+You are on the list
 
-> Offer valid on one market order of $20 or more. One use per customer. Casa Crobu will not sell or share your information.
+Grazie, [first name].
 
-Needs approval:
-
-- Confirm coupon limits.
-- Confirm whether `single market order` or `one market order` is clearer.
-- Confirm privacy phrasing.
-
----
-
-## 4. Consent Copy
-
-### SMS Opt-In Checkbox
-
-Current MVP:
-
-> Text me market updates and my 5% off code. Msg & data rates may apply. Reply STOP to opt out.
-
-More complete version:
-
-> Text me my 5% off code and occasional Casa Crobu market updates. By checking this box, I agree to receive recurring automated marketing text messages from Casa Crobu. Consent is not a condition of purchase. Msg & data rates may apply. Reply STOP to unsubscribe and HELP for help.
-
-Needs approval:
-
-- Confirm whether SMS is active on day one.
-- Confirm required provider language once Make/Twilio/SimpleTexting/Klaviyo path is final.
-- Confirm whether Casa Crobu has Terms and Privacy Policy URLs to link near this checkbox.
-
-### Email Opt-In Checkbox
-
-Current MVP:
-
-> Email me market updates and my 5% off code.
-
-Alternative:
-
-> Email me my 5% off code, weekly market locations, and occasional Casa Crobu updates.
-
-Needs approval:
-
-- Confirm whether email updates are weekly, occasional, or seasonal.
-- Confirm whether the email code is sent through Make, Shopify Email, Klaviyo, or manually at first.
+We received your signup and will send the code to the contact info you provided. See you at the market.
+```
 
 ---
 
-## 5. Success State
+## 4. Consent Copy To Approve
 
-Current:
+### SMS Checkbox
 
-> You are on the list
->
-> Grazie, [first name].
->
-> We received your signup and will send the code to the contact info you provided. See you at the market.
+```text
+Text me my 5% off code and occasional Casa Crobu market updates. By checking this box, I agree to receive recurring automated marketing text messages from Casa Crobu. Consent is not a condition of purchase. Msg & data rates may apply. Reply STOP to unsubscribe and HELP for help.
+```
 
-Alternative:
+### Email Checkbox
 
-> You are on the list
->
-> Grazie, [first name].
->
-> Your code is on the way. We will also send market locations and seasonal updates based on your opt-ins.
+```text
+Email me my 5% off code, weekly market locations, and occasional Casa Crobu updates.
+```
 
-Needs approval:
+### Privacy And Terms Note
 
-- Should the success copy promise immediate delivery?
-- Should it mention both email and text, or stay generic?
+Casa Crobu should confirm the Privacy Policy and Terms links before launch.
 
----
+Suggested note:
 
-## 6. Error And Validation Copy
+```text
+By signing up, you agree to receive messages based on your selected opt-ins. View Casa Crobu's Privacy Policy and Terms.
+```
 
-Current:
+If space allows near SMS consent:
 
-| Scenario | Copy |
-|---|---|
-| Missing first name | `First name is required.` |
-| Missing email and phone | `Enter either an email address or a mobile number.` |
-| Invalid email | `Enter a valid email address.` |
-| Invalid phone | `Enter a valid mobile number.` |
-| API failure | `We could not submit the form right now. Please try again.` |
-
-Needs approval:
-
-- These are utilitarian. No brand review likely needed unless Casa Crobu wants warmer error copy.
+```text
+Consent is not a condition of purchase. Message frequency may vary. Message and data rates may apply. Reply STOP to unsubscribe and HELP for help.
+```
 
 ---
 
-## 7. Internal Notification Copy
+## 5. Welcome Messages To Approve
 
-This is the Make/SMS/internal alert payload after a customer submits the form.
+### SMS Welcome Message
 
-Recommended internal SMS:
+```text
+Grazie from Casa Crobu. Use code MARKET5 for 5% off your next market order of $20 or more. Show this text at the booth. Reply STOP to opt out.
+```
 
-> New Casa Crobu market signup: [firstName] [lastName]. Email: [email]. Phone: [phone]. Market: [market]. Notes: [message]. Shopify: [shopifyCustomerId].
-
-Shorter internal SMS:
-
-> New market signup: [firstName]. Market: [market]. Contact: [email] [phone].
-
-Needs approval:
-
-- Who should receive internal notifications?
-- Should every signup trigger an SMS, or only signups with notes/questions?
-- Should internal notifications go to SMS, email, Slack, or just Make logs?
-
----
-
-## 8. Coupon Delivery Copy
-
-### SMS Code Message
+### Email Subject
 
 Recommended:
 
-> Grazie from Casa Crobu. Use code MARKET5 for 5% off your next market order of $20 or more. Show this text at the booth. Reply STOP to opt out.
+```text
+Your Casa Crobu market code
+```
 
-Alternative:
+Alternatives:
 
-> Welcome to the Casa Crobu market list. Your 5% off code is MARKET5. Valid on one market order of $20 or more.
+```text
+Grazie - here is your 5% off code
+You are on the Casa Crobu market list
+```
 
-Needs approval:
+### Email Body
 
-- Confirm code value: `MARKET5` or another code.
-- Confirm whether customers show the text at the booth or enter a code online.
-- Confirm whether the discount is manually honored at POS or created in Shopify.
+```text
+Hi [firstName],
 
-### Email Code Message
+Grazie for joining the Casa Crobu Market Club. Use code MARKET5 for 5% off your next market order of $20 or more.
 
-Subject options:
+We will send occasional market locations, seasonal specials, and preorder notes so you know where to find us next.
 
-1. `Your Casa Crobu market code`
-2. `Grazie - here is your 5% off code`
-3. `You are on the Casa Crobu market list`
-
-Body:
-
-> Hi [firstName],
->
-> Grazie for joining the Casa Crobu market list. Use code MARKET5 for 5% off your next market order of $20 or more.
->
-> We will send occasional market locations, seasonal specials, and preorder notes so you know where to find us next.
->
-> See you at the market,
-> Casa Crobu
-
-Needs approval:
-
-- Confirm subject line.
-- Confirm sign-off.
-- Confirm unsubscribe/footer handling based on sending tool.
+See you at the market,
+Casa Crobu
+```
 
 ---
 
-## 9. QR / Booth / Staff Copy
+## 6. Offer To Approve
 
-### QR Sign Copy
+Recommended launch offer:
 
-Option A:
+```text
+MARKET5
+5% off one market order of $20 or more
+One use per customer
+```
 
-> Join the Casa Crobu market list
->
-> Get 5% off your next $20+ market order.
->
-> Scan to get your code.
+Recommended redemption:
 
-Option B:
+```text
+Customer shows SMS or email at the booth. Staff applies the discount at checkout.
+```
 
-> Want the weekly market menu?
->
-> Join the Casa Crobu list and get 5% off your next market order.
+Open question:
 
-Needs approval:
+- Should this also be configured as a Shopify/POS discount code, or should staff apply it manually for the first launch?
 
-- Confirm whether the QR promise should focus on the coupon, weekly market menu, or both.
+---
+
+## 7. QR And Booth Copy To Approve
+
+### Option A
+
+```text
+Join the Casa Crobu Market Club
+
+Get 5% off your next $20+ market order.
+
+Scan to get your code.
+```
+
+### Option B
+
+```text
+Want the weekly market menu?
+
+Join the Casa Crobu Market Club and get 5% off your next market order.
+```
 
 ### Staff Prompt
 
-Option A:
-
-> Want 5% off next time? Scan here and join our market list.
-
-Option B:
-
-> Want to know where we will be next week? Join the market list and get 5% off your next order.
-
-Needs approval:
-
-- Confirm what staff can comfortably say at checkout.
-- Confirm whether the offer is for next time, same day, or either.
+```text
+Want 5% off next time? Scan here and join our Market Club.
+```
 
 ---
 
-## 10. Decisions Needed Before Launch
+## 8. Twilio Status And Cost Notes
 
-1. Is the offer exactly `5% off one market order of $20 or more`?
-2. What is the actual coupon code?
-3. Is the coupon honored at POS, online, or both?
-4. Is SMS live on day one, or email-only at first?
-5. Which tool sends the code: Make, Shopify Email, Klaviyo, SimpleTexting, or manual follow-up?
-6. What Privacy Policy and Terms links should be used for SMS compliance?
-7. Which markets should appear in copy or prefilled links?
-8. Who approves final copy?
-9. Who receives internal signup notifications?
-10. Is the Vercel landing page URL acceptable for QR/signage, or should it later be moved under `casacrobu.com`?
+Twilio is the SMS provider for this lightweight setup.
+
+Where things stand:
+
+- Twilio account is set up.
+- Toll-free SMS verification is in progress.
+- The app is ready to send the welcome SMS once approval is complete.
+- Production SMS marketing should wait for Twilio approval.
+
+Cost model:
+
+- Twilio is usage-based.
+- Casa Crobu should expect phone number cost, outbound SMS usage, inbound SMS usage if customers reply, and any carrier or compliance fees shown in Twilio.
+- This avoids paying for a heavier SMS platform before the Market Club proves signup volume and redemption.
+
+Reference:
+
+```text
+https://www.twilio.com/en-us/sms/pricing/us
+```
 
 ---
 
-## 11. Recommended Meeting Ask
+## 9. Open Approvals
 
-Use the meeting to get lightweight approval on these items:
+Kelly should approve or revise:
 
-1. Offer: `5% off one market order of $20 or more`
-2. Signup name: `Casa Crobu market list`
-3. Primary button: `Send my 5% off code`
-4. Whether SMS is active immediately or deferred
-5. Coupon code and redemption process
-6. Privacy/terms links
-7. Any phrases Casa Crobu does not want used
+1. Form copy.
+2. SMS opt-in copy.
+3. Email opt-in copy.
+4. Welcome SMS text.
+5. Welcome email subject and body.
+6. Offer type and amount.
+7. Coupon code: `MARKET5`.
+8. Redemption method at checkout.
+9. Privacy Policy URL.
+10. Terms URL.
+11. Whether the welcome email should be immediate or handled through Shopify Email/Campaigns.
+12. Whether Casa Crobu wants to create `club@casacrobu.com` for Market Club replies and operations.
+13. QR sign copy.
+14. Initial demo markets for early July.
 
-If those are approved, the MVP can launch with the Vercel page, Shopify customer creation, tags, customer notes, and Make notification flow.
+---
+
+## 10. Next Steps
+
+Recommended next phase:
+
+1. Confirm the approvals above.
+2. Finish Twilio toll-free verification.
+3. Configure final Twilio production credentials.
+4. Decide the welcome email path.
+5. Generate QR code links for the demo markets.
+6. Prepare QR/signage files for:
+   - `channel=booth_code`
+   - `channel=product_sticker`
+7. Create staff training materials.
+8. Record a short staff training video covering:
+   - how to present the QR code,
+   - what to say at checkout,
+   - how the welcome offer works,
+   - how staff should redeem the code,
+   - what to do if a customer has an SMS/email question.
+9. Confirm staff redemption instructions.
+10. Run one full production test.
+11. Launch at selected demo markets in early July.
+12. Review signups by source, location, and channel after the first market weekend.
+
+---
+
+## 11. Approval Summary
+
+My understanding is that the discovery and build-finalization work is now complete enough to hand off for approval.
+
+The remaining work is launch activation: final approvals, QR codes, staff training, Twilio approval follow-through, production QA, and early July rollout.

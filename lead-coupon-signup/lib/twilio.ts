@@ -1,0 +1,67 @@
+import type { NormalizedLeadPayload } from "./validation";
+
+type SmsResult = {
+  sent: boolean;
+  skipped: boolean;
+  sid?: string;
+};
+
+type TwilioMessageResponse = {
+  sid?: string;
+  message?: string;
+};
+
+export async function sendWelcomeSms(lead: NormalizedLeadPayload): Promise<SmsResult> {
+  if (!lead.smsOptIn || !lead.phone) {
+    return { sent: false, skipped: true };
+  }
+
+  const accountSid = process.env.TWILIO_ACCOUNT_SID;
+  const authToken = process.env.TWILIO_AUTH_TOKEN;
+  const messagingServiceSid = process.env.TWILIO_MESSAGING_SERVICE_SID;
+  const fromPhone = process.env.TWILIO_FROM_PHONE;
+
+  if (!accountSid || !authToken || (!messagingServiceSid && !fromPhone)) {
+    console.error("Twilio environment variables are not configured.");
+    return { sent: false, skipped: false };
+  }
+
+  const body = new URLSearchParams({
+    To: lead.phone,
+    Body:
+      process.env.WELCOME_SMS_BODY ||
+      "Grazie from Casa Crobu. Use code MARKET5 for 5% off your next market order of $20 or more. Show this text at the booth. Reply STOP to opt out.",
+  });
+
+  if (messagingServiceSid) {
+    body.set("MessagingServiceSid", messagingServiceSid);
+  } else if (fromPhone) {
+    body.set("From", fromPhone);
+  }
+
+  try {
+    const response = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`, {
+      method: "POST",
+      headers: {
+        Authorization: `Basic ${Buffer.from(`${accountSid}:${authToken}`).toString("base64")}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body,
+    });
+
+    const result = (await response.json()) as TwilioMessageResponse;
+
+    if (!response.ok) {
+      console.error("Twilio welcome SMS failed", {
+        status: response.status,
+        message: result.message || "Unknown Twilio error",
+      });
+      return { sent: false, skipped: false };
+    }
+
+    return { sent: true, skipped: false, sid: result.sid };
+  } catch (error) {
+    console.error("Twilio welcome SMS request failed", error);
+    return { sent: false, skipped: false };
+  }
+}

@@ -1,6 +1,6 @@
 # Casa Crobu Lead/Coupon Signup
 
-Lightweight Next.js landing page for Casa Crobu market lead capture. The page collects customer contact details, posts only to the serverless `/api/lead` route, creates or updates a Shopify customer through the Admin GraphQL API, and then posts a clean notification payload to a Make webhook.
+Lightweight Next.js landing page for Casa Crobu market lead capture. The page collects customer contact details, posts only to the serverless `/api/lead` route, creates or updates a Shopify customer through the Admin GraphQL API, sends the welcome SMS through Twilio when SMS opt-in is present, and can optionally post a clean notification payload to a Make webhook.
 
 ## Local setup
 
@@ -17,6 +17,11 @@ Lightweight Next.js landing page for Casa Crobu market lead capture. The page co
    SHOPIFY_ADMIN_ACCESS_TOKEN=shpat_xxx
    MAKE_WEBHOOK_URL=https://hook.us1.make.com/xxx
    INTERNAL_NOTIFICATION_PHONE=+17205550123
+   TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   TWILIO_AUTH_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   TWILIO_MESSAGING_SERVICE_SID=MGxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   TWILIO_FROM_PHONE=+17205550123
+   WELCOME_SMS_BODY=Grazie from Casa Crobu. Use code MARKET5 for 5% off your next market order of $20 or more. Show this text at the booth. Reply STOP to opt out.
    DEBUG_LEAD_SUBMISSIONS=false
    ```
 
@@ -35,7 +40,25 @@ Lightweight Next.js landing page for Casa Crobu market lead capture. The page co
 3. Install the app and copy the Admin API access token.
 4. Add `SHOPIFY_SHOP_DOMAIN` and `SHOPIFY_ADMIN_ACCESS_TOKEN` to Vercel project environment variables.
 
+## Twilio SMS setup
+
+1. In Twilio, buy or choose a sending number and complete any required U.S. A2P 10DLC or toll-free verification for Casa Crobu.
+2. Prefer a Twilio Messaging Service for production sending.
+3. Add these Vercel env vars:
+
+   ```bash
+   TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   TWILIO_AUTH_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   TWILIO_MESSAGING_SERVICE_SID=MGxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   WELCOME_SMS_BODY=Grazie from Casa Crobu. Use code MARKET5 for 5% off your next market order of $20 or more. Show this text at the booth. Reply STOP to opt out.
+   ```
+
+4. If you are not using a Messaging Service, set `TWILIO_FROM_PHONE` instead.
+5. Submit a test lead with `smsOptIn=true` and confirm the welcome SMS arrives.
+
 ## Make webhook setup
+
+Make is optional if Twilio is handling the welcome SMS directly. Keep Make if you want internal notifications, debug logging, email delivery, or later workflow routing.
 
 1. Create a Make scenario with a custom webhook trigger.
 2. Copy the webhook URL into `MAKE_WEBHOOK_URL`.

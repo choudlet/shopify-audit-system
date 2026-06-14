@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createOrUpdateShopifyCustomer } from "@/lib/shopify";
+import { sendWelcomeSms } from "@/lib/twilio";
 import { validateLeadPayload, type NormalizedLeadPayload } from "@/lib/validation";
 
 export async function POST(request: Request) {
@@ -27,12 +28,14 @@ export async function POST(request: Request) {
     }
 
     const shopifyResult = await createOrUpdateShopifyCustomer(validation.data);
+    const sms = await sendWelcomeSms(validation.data);
     const notification = await notifyMake(validation.data, shopifyResult.customerId);
 
     return NextResponse.json({
       ok: true,
       customerId: shopifyResult.customerId,
       action: shopifyResult.action,
+      smsSent: sms.sent,
       notificationSent: notification.sent,
     });
   } catch (error) {
