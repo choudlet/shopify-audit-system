@@ -1,4 +1,4 @@
-import { marketTag, type NormalizedLeadPayload } from "./validation";
+import { prefixedTag, type NormalizedLeadPayload } from "./validation";
 
 const SHOPIFY_API_VERSION = "2026-04";
 
@@ -125,11 +125,29 @@ export async function createOrUpdateShopifyCustomer(lead: NormalizedLeadPayload)
 }
 
 function buildTags(lead: NormalizedLeadPayload): string[] {
-  const tags = ["website-lead", "coupon-signup", "casa-crobu", "source-custom-landing-page"];
-  const tag = marketTag(lead.market);
+  const tags = ["market_club", "welcome_offer_5_off_20", "casa_crobu", "source_custom_landing_page"];
+  const sourceLocation = prefixedTag("source_location", lead.location || lead.market);
+  const sourceChannel = prefixedTag("source_channel", lead.channel || lead.source);
+  const campaign = prefixedTag("campaign", lead.campaign);
 
-  if (tag) {
-    tags.push(tag);
+  if (sourceLocation) {
+    tags.push(sourceLocation);
+  }
+
+  if (sourceChannel) {
+    tags.push(sourceChannel);
+  }
+
+  if (campaign) {
+    tags.push(campaign);
+  }
+
+  if (lead.email && lead.emailOptIn) {
+    tags.push("email_opt_in");
+  }
+
+  if (lead.phone && lead.smsOptIn) {
+    tags.push("sms_opt_in");
   }
 
   return tags;
@@ -137,13 +155,15 @@ function buildTags(lead: NormalizedLeadPayload): string[] {
 
 function buildLeadNote(lead: NormalizedLeadPayload): string {
   return [
-    "Casa Crobu coupon signup",
+    "Casa Crobu Market Club signup",
     `Submitted at: ${lead.submittedAt}`,
     `First name: ${lead.firstName}`,
     lead.lastName ? `Last name: ${lead.lastName}` : null,
     lead.email ? `Email: ${lead.email}` : null,
     lead.phone ? `Phone: ${lead.phone}` : null,
-    lead.market ? `Market: ${lead.market}` : null,
+    lead.location || lead.market ? `Source location: ${lead.location || lead.market}` : null,
+    lead.channel || lead.source ? `Source channel: ${lead.channel || lead.source}` : null,
+    lead.campaign ? `Campaign: ${lead.campaign}` : null,
     lead.message ? `Message: ${lead.message}` : null,
     `SMS opt-in: ${lead.smsOptIn ? "yes" : "no"}`,
     `Email opt-in: ${lead.emailOptIn ? "yes" : "no"}`,

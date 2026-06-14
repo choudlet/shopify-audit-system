@@ -75,4 +75,56 @@ Lightweight Next.js landing page for Casa Crobu market lead capture. The page co
 
 - The simplest launch path is to link to the Vercel landing page from Shopify navigation, market QR codes, booth signage, and receipt or follow-up content.
 - For an embedded feel, add a Shopify page section or custom Liquid block with a prominent button or iframe pointing to the Vercel URL. Keep the form hosted on Vercel so Admin API tokens and webhook secrets remain server-side only.
-- Use `?market=South%20Pearl%20Street` or `?location=South%20Pearl%20Street` on QR/signage links to add a market-specific Shopify tag and note without showing a market field on the form.
+- Use `?market=South%20Pearl%20Street` or `?location=South%20Pearl%20Street` on QR/signage links to add a market-specific Shopify tag and note without showing a market field on the form. If no `market` or `location` parameter is present, the form shows a market/location dropdown.
+
+## Launch link conventions
+
+Use URL parameters to create source-specific links without changing the form.
+
+### Product sticker
+
+Use this on product packaging, lid stickers, bag inserts, or take-home materials:
+
+```text
+https://shopify-audit-system.vercel.app?location=South%20Pearl%20Street&channel=product_sticker&campaign=summer-2026
+```
+
+Expected tags:
+
+```text
+source_location_south_pearl_street
+source_channel_product_sticker
+campaign_summer_2026
+```
+
+### Generic website or Instagram link
+
+Use this when the link is not tied to one specific market. The form will show a location dropdown:
+
+```text
+https://shopify-audit-system.vercel.app?channel=instagram&campaign=summer-2026
+```
+
+Expected tags after the customer selects a location:
+
+```text
+source_channel_instagram
+campaign_summer_2026
+source_location_{selected_location}
+```
+
+### Booth code
+
+Use this on booth signage, counter signs, table tents, or market checkout signs:
+
+```text
+https://shopify-audit-system.vercel.app?location=South%20Pearl%20Street&channel=booth_code&campaign=summer-2026
+```
+
+Expected tags:
+
+```text
+source_location_south_pearl_street
+source_channel_booth_code
+campaign_summer_2026
+```

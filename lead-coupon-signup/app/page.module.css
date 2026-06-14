@@ -210,6 +210,7 @@
 }
 
 .formPanel input,
+.formPanel select,
 .formPanel textarea {
   width: 100%;
   border: 1px solid #dfcfb5;
@@ -229,6 +230,16 @@
   padding: 8px 42px 8px 13px;
 }
 
+.formPanel select {
+  height: 39px;
+  padding: 8px 36px 8px 13px;
+  appearance: none;
+  background:
+    linear-gradient(45deg, transparent 50%, #5b4d45 50%) calc(100% - 18px) 16px / 6px 6px no-repeat,
+    linear-gradient(135deg, #5b4d45 50%, transparent 50%) calc(100% - 13px) 16px / 6px 6px no-repeat,
+    #fffaf3;
+}
+
 .formPanel textarea {
   resize: vertical;
   min-height: 78px;
@@ -236,6 +247,7 @@
 }
 
 .formPanel input:focus,
+.formPanel select:focus,
 .formPanel textarea:focus {
   border-color: var(--red);
   background: #fffdf8;
@@ -332,6 +344,9 @@
   border: 1px solid #e0d2bd;
   background: #fff8eb;
   color: var(--ink);
+  display: grid;
+  place-items: center;
+  text-decoration: none;
 }
 
 .finePrint {

@@ -18,6 +18,25 @@ const initialForm: LeadPayload = {
   emailOptIn: false,
 };
 
+const marketLocationOptions = [
+  "Belleview Station DTC",
+  "Boulder Farmers Market",
+  "Central Park",
+  "City Park",
+  "Festival Park",
+  "Gluten Free Market",
+  "Golden",
+  "Harvey Park",
+  "Highlands",
+  "Lafayette",
+  "Longmont Farmer's Market",
+  "Louisville",
+  "Parker",
+  "South Pearl Street Market",
+  "Thornton",
+  "Westminster",
+];
+
 export default function Home() {
   return (
     <Suspense>
@@ -29,6 +48,8 @@ export default function Home() {
 function LeadSignupPage() {
   const searchParams = useSearchParams();
   const isEmbed = searchParams.get("embed") === "1" || searchParams.get("embed") === "true";
+  const urlLocation = searchParams.get("location") || searchParams.get("market") || "";
+  const shouldShowLocationSelect = !urlLocation;
   const [form, setForm] = useState<LeadPayload>(initialForm);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,7 +68,11 @@ function LeadSignupPage() {
     event.preventDefault();
     const result = validateLeadPayload({
       ...form,
-      market: searchParams.get("market") || searchParams.get("location") || "",
+      market: urlLocation || form.location || "",
+      location: urlLocation || form.location || "",
+      source: searchParams.get("source") || "",
+      channel: searchParams.get("channel") || searchParams.get("source") || "",
+      campaign: searchParams.get("campaign") || "",
     });
 
     if (!result.ok) {
@@ -133,9 +158,9 @@ function LeadSignupPage() {
                 We received your signup and will send the code to the contact info you provided. See
                 you at the market.
               </p>
-              <button className={styles.secondaryButton} type="button" onClick={() => setSubmitted(false)}>
-                Add another signup
-              </button>
+              <a className={styles.secondaryButton} href="https://casacrobu.com">
+                Return to Casa Crobu
+              </a>
             </div>
           ) : (
             <form onSubmit={onSubmit} noValidate>
@@ -200,6 +225,24 @@ function LeadSignupPage() {
               </label>
 
               {errors.contact ? <p className={styles.inlineError}>{errors.contact}</p> : null}
+
+              {shouldShowLocationSelect ? (
+                <label>
+                  <span>Where did you find us?</span>
+                  <select
+                    name="location"
+                    value={form.location || ""}
+                    onChange={(event) => updateField("location", event.target.value)}
+                  >
+                    <option value="">Select a market or location</option>
+                    {marketLocationOptions.map((location) => (
+                      <option key={location} value={location}>
+                        {location}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              ) : null}
 
               <label>
                 <span>Notes</span>

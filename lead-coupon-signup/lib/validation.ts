@@ -4,6 +4,10 @@ export type LeadPayload = {
   email?: string;
   phone?: string;
   market?: string;
+  location?: string;
+  source?: string;
+  channel?: string;
+  campaign?: string;
   message?: string;
   smsOptIn?: boolean;
   emailOptIn?: boolean;
@@ -33,6 +37,10 @@ export function validateLeadPayload(payload: unknown): ValidationFailure | Valid
   const email = cleanEmail(input.email);
   const phone = normalizePhone(input.phone);
   const market = cleanText(input.market);
+  const location = cleanText(input.location);
+  const source = cleanText(input.source);
+  const channel = cleanText(input.channel);
+  const campaign = cleanText(input.campaign);
   const message = cleanText(input.message, 1000);
   const smsOptIn = input.smsOptIn === true;
   const emailOptIn = input.emailOptIn === true;
@@ -66,6 +74,10 @@ export function validateLeadPayload(payload: unknown): ValidationFailure | Valid
       email,
       phone,
       market,
+      location,
+      source,
+      channel,
+      campaign,
       message,
       smsOptIn,
       emailOptIn,
@@ -113,16 +125,16 @@ function normalizePhone(value: unknown): string {
   return digits;
 }
 
-export function marketTag(market?: string): string | null {
-  if (!market) {
+export function prefixedTag(prefix: string, value?: string): string | null {
+  if (!value) {
     return null;
   }
 
-  const slug = market
+  const slug = value
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "")
     .slice(0, 50);
 
-  return slug ? `market-${slug}` : null;
+  return slug ? `${prefix}_${slug}` : null;
 }
