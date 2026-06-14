@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, Suspense, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import styles from "./page.module.css";
 import { validateLeadPayload, type LeadPayload } from "@/lib/validation";
 
@@ -18,6 +19,16 @@ const initialForm: LeadPayload = {
 };
 
 export default function Home() {
+  return (
+    <Suspense>
+      <LeadSignupPage />
+    </Suspense>
+  );
+}
+
+function LeadSignupPage() {
+  const searchParams = useSearchParams();
+  const isEmbed = searchParams.get("embed") === "1" || searchParams.get("embed") === "true";
   const [form, setForm] = useState<LeadPayload>(initialForm);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -34,7 +45,10 @@ export default function Home() {
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const result = validateLeadPayload(form);
+    const result = validateLeadPayload({
+      ...form,
+      market: searchParams.get("market") || searchParams.get("location") || "",
+    });
 
     if (!result.ok) {
       setErrors(result.errors);
@@ -65,22 +79,24 @@ export default function Home() {
   }
 
   return (
-    <main className={styles.page}>
-      <div className={styles.ribbon}>Catch us at the market - 5% off your next $20+ order</div>
+    <main className={`${styles.page} ${isEmbed ? styles.embeddedPage : ""}`}>
+      {isEmbed ? null : <div className={styles.ribbon}>Catch us at the market - 5% off your next $20+ order</div>}
 
-      <header className={styles.header}>
-        <a className={styles.brand} href="https://casacrobu.com" aria-label="Casa Crobu home">
-          <img
-            className={styles.logoImage}
-            src="https://casacrobu.com/cdn/shop/files/websitelogotransparent_e3945784-8899-4a2b-9751-c1b9ea06206a_360x.gif?v=1614774856"
-            alt=""
-          />
-          <span>Casa Crobu</span>
-        </a>
-        <a className={styles.siteLink} href="https://casacrobu.com">
-          casacrobu.com <span aria-hidden="true">-&gt;</span>
-        </a>
-      </header>
+      {isEmbed ? null : (
+        <header className={styles.header}>
+          <a className={styles.brand} href="https://casacrobu.com" aria-label="Casa Crobu home">
+            <img
+              className={styles.logoImage}
+              src="https://casacrobu.com/cdn/shop/files/websitelogotransparent_e3945784-8899-4a2b-9751-c1b9ea06206a_360x.gif?v=1614774856"
+              alt=""
+            />
+            <span>Casa Crobu</span>
+          </a>
+          <a className={styles.siteLink} href="https://casacrobu.com">
+            casacrobu.com <span aria-hidden="true">-&gt;</span>
+          </a>
+        </header>
+      )}
 
       <section className={styles.hero}>
         <div className={styles.copy}>
@@ -186,17 +202,6 @@ export default function Home() {
               {errors.contact ? <p className={styles.inlineError}>{errors.contact}</p> : null}
 
               <label>
-                <span>Market or location</span>
-                <input
-                  name="market"
-                  value={form.market}
-                  onChange={(event) => updateField("market", event.target.value)}
-                  placeholder="South Pearl Street"
-                  autoComplete="off"
-                />
-              </label>
-
-              <label>
                 <span>Notes</span>
                 <textarea
                   name="message"
@@ -246,10 +251,12 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className={styles.footer}>
-        © 2026 Casa Crobu · Authentic Italian, home delivered ·{" "}
-        <a href="https://casacrobu.com">casacrobu.com</a>
-      </footer>
+      {isEmbed ? null : (
+        <footer className={styles.footer}>
+          © 2026 Casa Crobu · Authentic Italian, home delivered ·{" "}
+          <a href="https://casacrobu.com">casacrobu.com</a>
+        </footer>
+      )}
     </main>
   );
 }

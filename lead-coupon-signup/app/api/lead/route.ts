@@ -27,17 +27,22 @@ export async function POST(request: Request) {
     }
 
     const shopifyResult = await createOrUpdateShopifyCustomer(validation.data);
-    await notifyMake(validation.data, shopifyResult.customerId);
+    const notification = await notifyMake(validation.data, shopifyResult.customerId);
 
     return NextResponse.json({
       ok: true,
       customerId: shopifyResult.customerId,
       action: shopifyResult.action,
+      notificationSent: notification.sent,
     });
   } catch (error) {
     console.error("Lead submission failed", error);
     return NextResponse.json(
-      { ok: false, error: "We could not submit the form right now. Please try again." },
+      {
+        ok: false,
+        code: "SHOPIFY_CUSTOMER_SYNC_FAILED",
+        error: "We could not submit the form right now. Please try again.",
+      },
       { status: 502 },
     );
   }
@@ -51,7 +56,7 @@ async function notifyMake(lead: NormalizedLeadPayload, shopifyCustomerId: string
   const webhookUrl = process.env.MAKE_WEBHOOK_URL;
 
   if (!webhookUrl) {
-    return;
+    return { sent: false, skipped: true };
   }
 
   const payload = {
@@ -69,13 +74,21 @@ async function notifyMake(lead: NormalizedLeadPayload, shopifyCustomerId: string
     submittedAt: lead.submittedAt,
   };
 
-  const response = await fetch(webhookUrl, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  try {
+    const response = await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
 
-  if (!response.ok) {
-    throw new Error(`Make webhook failed with ${response.status}.`);
+    if (!response.ok) {
+      console.error("Make webhook failed", { status: response.status });
+      return { sent: false, skipped: false };
+    }
+
+    return { sent: true, skipped: false };
+  } catch (error) {
+    console.error("Make webhook request failed", error);
+    return { sent: false, skipped: false };
   }
 }

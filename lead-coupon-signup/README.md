@@ -75,4 +75,4 @@ Lightweight Next.js landing page for Casa Crobu market lead capture. The page co
 
 - The simplest launch path is to link to the Vercel landing page from Shopify navigation, market QR codes, booth signage, and receipt or follow-up content.
 - For an embedded feel, add a Shopify page section or custom Liquid block with a prominent button or iframe pointing to the Vercel URL. Keep the form hosted on Vercel so Admin API tokens and webhook secrets remain server-side only.
-- Add UTM parameters or a `market` query enhancement later if Casa Crobu wants prefilled market-specific links.
+- Use `?market=South%20Pearl%20Street` or `?location=South%20Pearl%20Street` on QR/signage links to add a market-specific Shopify tag and note without showing a market field on the form.
