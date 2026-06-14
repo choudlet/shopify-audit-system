@@ -18,8 +18,20 @@ export async function GET(request: Request) {
     return html("Invalid Shopify callback", "The callback is missing a valid shop or authorization code.", 400);
   }
 
-  if (!verifyShopifyCallback(url.searchParams) || !verifyState(state, shop)) {
-    return html("Invalid Shopify callback", "Shopify callback verification failed.", 400);
+  if (!verifyShopifyCallback(url)) {
+    return html(
+      "Invalid Shopify callback",
+      "Shopify HMAC verification failed. Check that SHOPIFY_CLIENT_SECRET in Vercel exactly matches the Dev Dashboard client secret for this app.",
+      400,
+    );
+  }
+
+  if (!verifyState(state, shop)) {
+    return html(
+      "Invalid Shopify callback",
+      "Shopify state verification failed. Start again from the /api/shopify/install URL and complete the authorization within 30 minutes.",
+      400,
+    );
   }
 
   try {

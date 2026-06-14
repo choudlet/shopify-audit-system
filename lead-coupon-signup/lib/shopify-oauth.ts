@@ -1,7 +1,7 @@
 import crypto from "crypto";
 
 const SHOPIFY_SCOPES = "read_customers,write_customers";
-const STATE_MAX_AGE_MS = 10 * 60 * 1000;
+const STATE_MAX_AGE_MS = 30 * 60 * 1000;
 
 type TokenResponse = {
   access_token?: string;
@@ -11,7 +11,7 @@ type TokenResponse = {
 };
 
 export function buildInstallUrl(shop: string, appUrl: string) {
-  const clientId = process.env.SHOPIFY_CLIENT_ID;
+  const clientId = process.env.SHOPIFY_CLIENT_ID?.trim();
 
   if (!clientId) {
     throw new Error("SHOPIFY_CLIENT_ID is not configured.");
@@ -28,8 +28,8 @@ export function buildInstallUrl(shop: string, appUrl: string) {
 }
 
 export async function exchangeCodeForToken(shop: string, code: string) {
-  const clientId = process.env.SHOPIFY_CLIENT_ID;
-  const clientSecret = process.env.SHOPIFY_CLIENT_SECRET;
+  const clientId = process.env.SHOPIFY_CLIENT_ID?.trim();
+  const clientSecret = getClientSecret();
 
   if (!clientId || !clientSecret) {
     throw new Error("Shopify OAuth environment variables are not configured.");
@@ -61,27 +61,35 @@ export function isValidShopDomain(shop: string | null): shop is string {
   return Boolean(shop && /^[a-z0-9][a-z0-9-]*\.myshopify\.com$/i.test(shop));
 }
 
-export function verifyShopifyCallback(searchParams: URLSearchParams) {
-  const hmac = searchParams.get("hmac");
-  const clientSecret = process.env.SHOPIFY_CLIENT_SECRET;
+export function verifyShopifyCallback(callbackUrl: URL) {
+  const hmac = callbackUrl.searchParams.get("hmac");
+  const clientSecret = getClientSecret();
 
   if (!hmac || !clientSecret) {
     return false;
   }
 
-  const message = Array.from(searchParams.entries())
+  const decodedMessage = Array.from(callbackUrl.searchParams.entries())
     .filter(([key]) => key !== "hmac" && key !== "signature")
     .sort(([left], [right]) => left.localeCompare(right))
     .map(([key, value]) => `${key}=${value}`)
     .join("&");
 
-  const digest = crypto.createHmac("sha256", clientSecret).update(message).digest("hex");
+  const rawMessage = callbackUrl.search
+    .slice(1)
+    .split("&")
+    .filter((part) => !part.startsWith("hmac=") && !part.startsWith("signature="))
+    .sort((left, right) => left.split("=")[0].localeCompare(right.split("=")[0]))
+    .join("&");
 
-  return crypto.timingSafeEqual(Buffer.from(digest, "utf8"), Buffer.from(hmac, "utf8"));
+  return [decodedMessage, rawMessage].some((message) => {
+    const digest = crypto.createHmac("sha256", clientSecret).update(message).digest("hex");
+    return safeCompare(digest, hmac);
+  });
 }
 
 export function verifyState(state: string | null, shop: string) {
-  const clientSecret = process.env.SHOPIFY_CLIENT_SECRET;
+  const clientSecret = getClientSecret();
 
   if (!state || !clientSecret) {
     return false;
@@ -95,7 +103,7 @@ export function verifyState(state: string | null, shop: string) {
 
   const expectedSignature = crypto.createHmac("sha256", clientSecret).update(encodedPayload).digest("hex");
 
-  if (!crypto.timingSafeEqual(Buffer.from(expectedSignature, "utf8"), Buffer.from(signature, "utf8"))) {
+  if (!safeCompare(expectedSignature, signature)) {
     return false;
   }
 
@@ -108,7 +116,7 @@ export function verifyState(state: string | null, shop: string) {
 }
 
 function signState(shop: string) {
-  const clientSecret = process.env.SHOPIFY_CLIENT_SECRET;
+  const clientSecret = getClientSecret();
 
   if (!clientSecret) {
     throw new Error("SHOPIFY_CLIENT_SECRET is not configured.");
@@ -118,4 +126,19 @@ function signState(shop: string) {
   const signature = crypto.createHmac("sha256", clientSecret).update(payload).digest("hex");
 
   return `${payload}.${signature}`;
+}
+
+function getClientSecret() {
+  return process.env.SHOPIFY_CLIENT_SECRET?.trim();
+}
+
+function safeCompare(left: string, right: string) {
+  const leftBuffer = Buffer.from(left, "utf8");
+  const rightBuffer = Buffer.from(right, "utf8");
+
+  if (leftBuffer.length !== rightBuffer.length) {
+    return false;
+  }
+
+  return crypto.timingSafeEqual(leftBuffer, rightBuffer);
 }
