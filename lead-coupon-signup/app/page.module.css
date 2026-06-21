@@ -285,6 +285,7 @@
 }
 
 .checks input {
+  position: relative;
   width: 18px;
   height: 18px;
   min-height: auto;
@@ -299,10 +300,19 @@
 
 .checks input:checked {
   border-color: var(--red);
-  background:
-    linear-gradient(135deg, transparent 50%, white 50%) 4px 9px / 4px 2px no-repeat,
-    linear-gradient(45deg, transparent 50%, white 50%) 8px 7px / 7px 2px no-repeat,
-    var(--red);
+  background: var(--red);
+}
+
+.checks input:checked::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
 }
 
 .checks input:focus-visible {
