@@ -13,7 +13,6 @@ const initialForm: LeadPayload = {
   email: "",
   phone: "",
   market: "",
-  message: "",
   smsOptIn: false,
   emailOptIn: false,
 };
@@ -243,17 +242,6 @@ function LeadSignupPage() {
                   </select>
                 </label>
               ) : null}
-
-              <label>
-                <span>Notes</span>
-                <textarea
-                  name="message"
-                  value={form.message}
-                  onChange={(event) => updateField("message", event.target.value)}
-                  placeholder="Favorite dish, pickup note, or question"
-                  rows={3}
-                />
-              </label>
 
               <div className={styles.checks}>
                 <label>

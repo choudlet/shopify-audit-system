@@ -33,7 +33,6 @@ The form will collect:
 - last name
 - email
 - phone number
-- optional notes
 - email opt-in
 - SMS opt-in
 - where the signup came from
