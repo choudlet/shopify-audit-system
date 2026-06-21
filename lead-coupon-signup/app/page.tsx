@@ -178,6 +178,9 @@ function LeadSignupPage() {
                     onChange={(event) => updateField("firstName", event.target.value)}
                     placeholder="Maria"
                     autoComplete="given-name"
+                    data-1p-ignore="true"
+                    data-bwignore="true"
+                    data-lpignore="true"
                     aria-invalid={Boolean(errors.firstName)}
                   />
                   {errors.firstName ? <small>{errors.firstName}</small> : null}
@@ -191,6 +194,9 @@ function LeadSignupPage() {
                     onChange={(event) => updateField("lastName", event.target.value)}
                     placeholder="Rossi"
                     autoComplete="family-name"
+                    data-1p-ignore="true"
+                    data-bwignore="true"
+                    data-lpignore="true"
                   />
                 </label>
               </div>
