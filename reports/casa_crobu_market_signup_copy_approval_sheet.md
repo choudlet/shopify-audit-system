@@ -239,13 +239,13 @@ Catch us at the market - 5% off your next $20+ order
 ### Offer Badge
 
 ```text
-Market list - welcome offer
+Market Club - welcome offer
 ```
 
 ### Headline
 
 ```text
-Join the market list. Get 5% off.
+Join the Market Club. Get 5% off.
 ```
 
 ### Supporting Copy
@@ -277,7 +277,7 @@ Sign up below and we will send your code.
 ### Button
 
 ```text
-Join the market list
+Join the Market Club
 ```
 
 ### Fine Print
@@ -289,7 +289,7 @@ Offer valid on one market order of $20 or more. One use per customer. Casa Crobu
 ### Success Message
 
 ```text
-You are on the list
+You are in the Market Club
 
 Grazie, [first name].
 
@@ -350,7 +350,7 @@ Alternatives:
 
 ```text
 Grazie - here is your 5% off code
-You are on the Casa Crobu market list
+You are in the Casa Crobu Market Club
 ```
 
 ### Email Body

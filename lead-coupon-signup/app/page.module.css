@@ -288,6 +288,8 @@
   position: relative;
   width: 18px;
   height: 18px;
+  display: grid;
+  place-items: center;
   min-height: auto;
   margin: 0;
   padding: 0;
@@ -304,15 +306,11 @@
 }
 
 .checks input:checked::after {
-  content: "";
-  position: absolute;
-  left: 5px;
-  top: 2px;
-  width: 5px;
-  height: 10px;
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
+  content: "✓";
+  color: #fffdf8;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1;
 }
 
 .checks input:focus-visible {

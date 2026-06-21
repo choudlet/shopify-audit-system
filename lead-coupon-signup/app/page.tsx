@@ -126,10 +126,10 @@ function LeadSignupPage() {
       <section className={styles.hero}>
         <div className={styles.copy}>
           <div className={styles.pill}>
-            <span aria-hidden="true">◇</span> Market list - welcome offer
+            <span aria-hidden="true">◇</span> Market Club - welcome offer
           </div>
           <h1>
-            Join the market list. <span>Get 5% off.</span>
+            Join the Market Club. <span>Get 5% off.</span>
           </h1>
           <p className={styles.intro}>
             Join the Casa Crobu Market Club to hear where we will be each week and unlock{" "}
@@ -152,7 +152,7 @@ function LeadSignupPage() {
         <div className={styles.formPanel}>
           {submitted ? (
             <div className={styles.success} role="status">
-              <p className={styles.kicker}>You are on the list</p>
+              <p className={styles.kicker}>You are in the Market Club</p>
               <h2>Grazie, {firstName}.</h2>
               <p>
                 We received your signup and will send the code to the contact info you provided. See
@@ -165,7 +165,7 @@ function LeadSignupPage() {
           ) : (
             <form onSubmit={onSubmit} noValidate>
               <div className={styles.formHeading}>
-                <p className={styles.kicker}>Market list</p>
+                <p className={styles.kicker}>Market Club</p>
                 <h2>Claim your 5% off</h2>
                 <p>Sign up below and we will send your code.</p>
               </div>
@@ -282,7 +282,7 @@ function LeadSignupPage() {
               {submitError ? <p className={styles.submitError}>{submitError}</p> : null}
 
               <button className={styles.submitButton} type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Sending..." : "Join the market list"}
+                {isSubmitting ? "Sending..." : "Join the Market Club"}
               </button>
 
               <p className={styles.finePrint}>
