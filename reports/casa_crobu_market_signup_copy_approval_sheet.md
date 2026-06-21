@@ -63,6 +63,7 @@ Source tags:
 
 ```text
 source_location_south_pearl_street_market
+market_location_south_pearl_street_market
 source_channel_product_sticker
 source_channel_booth_code
 source_channel_shopify_page
@@ -141,7 +142,7 @@ Customer checks email box
 ```text
 QR link includes location
 → customer does not have to choose a market
-→ Shopify gets a location tag automatically
+→ Shopify gets source and market location tags automatically
 ```
 
 Example:
@@ -155,7 +156,7 @@ https://casacrobu.com/pages/market-club?location=South%20Pearl%20Street%20Market
 ```text
 Customer sees a dropdown
 → customer chooses where they found Casa Crobu
-→ Shopify gets a location tag from that choice
+→ Shopify gets source and market location tags from that choice
 ```
 
 This is useful for the website, Instagram, and other general links.

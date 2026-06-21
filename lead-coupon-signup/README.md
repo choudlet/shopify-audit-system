@@ -116,6 +116,7 @@ Expected tags:
 
 ```text
 source_location_south_pearl_street
+market_location_south_pearl_street
 source_channel_product_sticker
 campaign_summer_2026
 ```
@@ -134,6 +135,7 @@ Expected tags after the customer selects a location:
 source_channel_instagram
 campaign_summer_2026
 source_location_{selected_location}
+market_location_{selected_location}
 ```
 
 ### Booth code
@@ -148,6 +150,7 @@ Expected tags:
 
 ```text
 source_location_south_pearl_street
+market_location_south_pearl_street
 source_channel_booth_code
 campaign_summer_2026
 ```

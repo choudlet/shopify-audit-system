@@ -126,12 +126,18 @@ export async function createOrUpdateShopifyCustomer(lead: NormalizedLeadPayload)
 
 function buildTags(lead: NormalizedLeadPayload): string[] {
   const tags = ["market_club", "welcome_offer_5_off_20", "casa_crobu", "source_custom_landing_page"];
-  const sourceLocation = prefixedTag("source_location", lead.location || lead.market);
+  const submittedLocation = lead.location || lead.market;
+  const sourceLocation = prefixedTag("source_location", submittedLocation);
+  const marketLocation = prefixedTag("market_location", submittedLocation);
   const sourceChannel = prefixedTag("source_channel", lead.channel || lead.source);
   const campaign = prefixedTag("campaign", lead.campaign);
 
   if (sourceLocation) {
     tags.push(sourceLocation);
+  }
+
+  if (marketLocation) {
+    tags.push(marketLocation);
   }
 
   if (sourceChannel) {
