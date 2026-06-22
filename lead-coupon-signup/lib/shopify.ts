@@ -1,6 +1,7 @@
 import { prefixedTag, type NormalizedLeadPayload } from "./validation";
 
 const SHOPIFY_API_VERSION = "2026-04";
+const WELCOME_OFFER_TAG = "welcome_offer_5_off_20";
 
 type ShopifyCustomer = {
   id: string;
@@ -21,6 +22,8 @@ type ShopifyResponse<T> = {
 type UpsertCustomerResult = {
   customerId: string;
   action: "created" | "updated";
+  shouldSendWelcome: boolean;
+  alreadyHadWelcomeOffer: boolean;
 };
 
 const CREATE_CUSTOMER_MUTATION = `
@@ -68,6 +71,12 @@ const FIND_CUSTOMER_QUERY = `
 export async function createOrUpdateShopifyCustomer(lead: NormalizedLeadPayload): Promise<UpsertCustomerResult> {
   const tags = buildTags(lead);
   const note = buildLeadNote(lead);
+  const existingCustomer = await findExistingCustomer(lead);
+
+  if (existingCustomer) {
+    return updateExistingCustomer(existingCustomer, lead, tags, note);
+  }
+
   const input = {
     firstName: lead.firstName,
     lastName: lead.lastName || undefined,
@@ -88,14 +97,30 @@ export async function createOrUpdateShopifyCustomer(lead: NormalizedLeadPayload)
   const createdCustomerId = createResult.customerCreate.customer?.id;
 
   if (createdCustomerId && createErrors.length === 0) {
-    return { customerId: createdCustomerId, action: "created" };
+    return {
+      customerId: createdCustomerId,
+      action: "created",
+      shouldSendWelcome: true,
+      alreadyHadWelcomeOffer: false,
+    };
   }
 
-  const existingCustomer = await findExistingCustomer(lead);
+  const customerFoundAfterCreateError = await findExistingCustomer(lead);
 
-  if (!existingCustomer) {
+  if (!customerFoundAfterCreateError) {
     throw new Error(createErrors[0]?.message || "Shopify could not create this customer.");
   }
+
+  return updateExistingCustomer(customerFoundAfterCreateError, lead, tags, note);
+}
+
+async function updateExistingCustomer(
+  existingCustomer: ShopifyCustomer,
+  lead: NormalizedLeadPayload,
+  tags: string[],
+  note: string,
+): Promise<UpsertCustomerResult> {
+  const alreadyHadWelcomeOffer = hasTag(existingCustomer.tags, WELCOME_OFFER_TAG);
 
   const updateResult = await shopifyGraphql<{
     customerUpdate: {
@@ -121,11 +146,16 @@ export async function createOrUpdateShopifyCustomer(lead: NormalizedLeadPayload)
     throw new Error(updateErrors[0]?.message || "Shopify could not update this customer.");
   }
 
-  return { customerId: updatedCustomerId, action: "updated" };
+  return {
+    customerId: updatedCustomerId,
+    action: "updated",
+    shouldSendWelcome: !alreadyHadWelcomeOffer,
+    alreadyHadWelcomeOffer,
+  };
 }
 
 function buildTags(lead: NormalizedLeadPayload): string[] {
-  const tags = ["market_club", "welcome_offer_5_off_20", "casa_crobu", "source_custom_landing_page"];
+  const tags = ["market_club", WELCOME_OFFER_TAG, "casa_crobu", "source_custom_landing_page"];
   const submittedLocation = lead.location || lead.market;
   const sourceLocation = prefixedTag("source_location", submittedLocation);
   const marketLocation = prefixedTag("market_location", submittedLocation);
@@ -187,7 +217,16 @@ function mergeTags(existingTags: string[], newTags: string[]): string[] {
 }
 
 async function findExistingCustomer(lead: NormalizedLeadPayload): Promise<ShopifyCustomer | null> {
-  const query = lead.email ? `email:${escapeSearchValue(lead.email)}` : `phone:${escapeSearchValue(lead.phone || "")}`;
+  const emailCustomer = lead.email ? await findCustomer(`email:${escapeSearchValue(lead.email)}`) : null;
+
+  if (emailCustomer) {
+    return emailCustomer;
+  }
+
+  return lead.phone ? findCustomer(`phone:${escapeSearchValue(lead.phone)}`) : null;
+}
+
+async function findCustomer(query: string): Promise<ShopifyCustomer | null> {
   const result = await shopifyGraphql<{
     customers: {
       edges: Array<{ node: ShopifyCustomer }>;
@@ -195,6 +234,10 @@ async function findExistingCustomer(lead: NormalizedLeadPayload): Promise<Shopif
   }>(FIND_CUSTOMER_QUERY, { query });
 
   return result.customers.edges[0]?.node || null;
+}
+
+function hasTag(tags: string[] | null | undefined, tag: string): boolean {
+  return Boolean(tags?.some((existingTag) => existingTag.toLowerCase() === tag.toLowerCase()));
 }
 
 function escapeSearchValue(value: string): string {

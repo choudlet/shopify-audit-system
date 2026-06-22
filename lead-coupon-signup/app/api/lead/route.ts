@@ -28,7 +28,9 @@ export async function POST(request: Request) {
     }
 
     const shopifyResult = await createOrUpdateShopifyCustomer(validation.data);
-    const sms = await sendWelcomeSms(validation.data);
+    const sms = shopifyResult.shouldSendWelcome
+      ? await sendWelcomeSms(validation.data)
+      : { sent: false, skipped: true, reason: "welcome_offer_already_sent" };
     const notification = await notifyMake(validation.data, shopifyResult.customerId);
 
     return NextResponse.json({
@@ -36,6 +38,7 @@ export async function POST(request: Request) {
       customerId: shopifyResult.customerId,
       action: shopifyResult.action,
       smsSent: sms.sent,
+      welcomeAlreadySent: shopifyResult.alreadyHadWelcomeOffer,
       notificationSent: notification.sent,
     });
   } catch (error) {

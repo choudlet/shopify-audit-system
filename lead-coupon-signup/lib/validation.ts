@@ -9,6 +9,7 @@ export type LeadPayload = {
   channel?: string;
   campaign?: string;
   message?: string;
+  companyWebsite?: string;
   smsOptIn?: boolean;
   emailOptIn?: boolean;
 };
@@ -29,6 +30,8 @@ type ValidationSuccess = {
 };
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const blockedEmailDomains = new Set(["example.com", "fake.com", "test.com", "noemail.com", "none.com"]);
+const blockedEmailAddresses = new Set(["test@test.com", "none@none.com", "noemail@noemail.com", "fake@fake.com"]);
 
 export function validateLeadPayload(payload: unknown): ValidationFailure | ValidationSuccess {
   const input = isRecord(payload) ? payload : {};
@@ -42,9 +45,14 @@ export function validateLeadPayload(payload: unknown): ValidationFailure | Valid
   const channel = cleanText(input.channel);
   const campaign = cleanText(input.campaign);
   const message = cleanText(input.message, 1000);
+  const companyWebsite = cleanText(input.companyWebsite);
   const smsOptIn = input.smsOptIn === true;
   const emailOptIn = input.emailOptIn === true;
   const errors: ValidationFailure["errors"] = {};
+
+  if (companyWebsite) {
+    errors.companyWebsite = "We could not submit the form right now. Please try again.";
+  }
 
   if (!firstName) {
     errors.firstName = "First name is required.";
@@ -52,6 +60,10 @@ export function validateLeadPayload(payload: unknown): ValidationFailure | Valid
 
   if (email && !emailPattern.test(email)) {
     errors.email = "Enter a valid email address.";
+  }
+
+  if (email && isBlockedEmail(email)) {
+    errors.email = "Enter a real email address.";
   }
 
   if (phone && phone.length < 10) {
@@ -79,6 +91,7 @@ export function validateLeadPayload(payload: unknown): ValidationFailure | Valid
       channel,
       campaign,
       message,
+      companyWebsite: "",
       smsOptIn,
       emailOptIn,
       submittedAt: new Date().toISOString(),
@@ -96,6 +109,20 @@ function cleanText(value: unknown, maxLength = 120): string {
 
 function cleanEmail(value: unknown): string {
   return cleanText(value, 254).toLowerCase();
+}
+
+function isBlockedEmail(email: string): boolean {
+  const [localPart, domain] = email.split("@");
+
+  if (!localPart || !domain) {
+    return false;
+  }
+
+  if (blockedEmailAddresses.has(email) || blockedEmailDomains.has(domain)) {
+    return true;
+  }
+
+  return /^(test|fake|none|noemail|asdf|qwerty|abc|sample)(\+.*)?$/i.test(localPart);
 }
 
 function normalizePhone(value: unknown): string {

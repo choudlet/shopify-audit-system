@@ -13,6 +13,7 @@ const initialForm: LeadPayload = {
   email: "",
   phone: "",
   market: "",
+  companyWebsite: "",
   smsOptIn: false,
   emailOptIn: false,
 };
@@ -141,7 +142,7 @@ function LeadSignupPage() {
               <span aria-hidden="true">⌖</span> Weekly market stops and booth updates
             </li>
             <li>
-              <span aria-hidden="true">▣</span> Seasonal specials and preorder reminders
+              <span aria-hidden="true">✦</span> Seasonal specials and preorder reminders
             </li>
             <li>
               <span aria-hidden="true">✓</span> Your 5% off code by email or text
@@ -164,6 +165,16 @@ function LeadSignupPage() {
             </div>
           ) : (
             <form onSubmit={onSubmit} noValidate>
+              <input
+                className={styles.honeypot}
+                name="companyWebsite"
+                value={form.companyWebsite || ""}
+                onChange={(event) => updateField("companyWebsite", event.target.value)}
+                tabIndex={-1}
+                autoComplete="off"
+                aria-hidden="true"
+              />
+
               <div className={styles.formHeading}>
                 <p className={styles.kicker}>Market Club</p>
                 <h2>Claim your 5% off</h2>
@@ -257,6 +268,7 @@ function LeadSignupPage() {
                     checked={form.smsOptIn}
                     onChange={(event) => updateField("smsOptIn", event.target.checked)}
                   />
+                  <span className={styles.checkBox} aria-hidden="true" />
                   <span>
                     Text me my 5% off code and occasional Casa Crobu market updates. By checking
                     this box, I agree to receive recurring automated marketing text messages from
@@ -270,6 +282,7 @@ function LeadSignupPage() {
                     checked={form.emailOptIn}
                     onChange={(event) => updateField("emailOptIn", event.target.checked)}
                   />
+                  <span className={styles.checkBox} aria-hidden="true" />
                   <span>Email me my 5% off code, weekly market locations, and occasional Casa Crobu updates.</span>
                 </label>
               </div>
