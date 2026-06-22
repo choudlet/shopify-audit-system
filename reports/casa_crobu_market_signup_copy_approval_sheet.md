@@ -250,14 +250,14 @@ Join the Market Club. Get 5% off.
 ### Supporting Copy
 
 ```text
-Join the Casa Crobu Market Club to hear where we will be each week and unlock 5% off any market order over $20. Lasagna, eggplant parmigiana, Sardinian specialties, and seasonal specialties straight from our casa to yours.
+Join the Casa Crobu Market Club for weekly market stops, seasonal specials, preorder reminders, and 5% off your next market order of $20 or more. From lasagna and eggplant parmigiana to Sardinian favorites, we will help you find what is fresh, ready, and waiting at the booth.
 ```
 
 ### Benefits
 
 ```text
-Weekly market locations
-Seasonal specials and preorder notes
+Weekly market stops and booth updates
+Seasonal specials and preorder reminders
 Your 5% off code by email or text
 ```
 

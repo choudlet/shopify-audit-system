@@ -131,16 +131,17 @@ function LeadSignupPage() {
             Join the Market Club. <span>Get 5% off.</span>
           </h1>
           <p className={styles.intro}>
-            Join the Casa Crobu Market Club to hear where we will be each week and unlock{" "}
-            <strong>5% off any market order over $20.</strong> Lasagna, eggplant parmigiana, Sardinian
-            specialties, and seasonal specialties straight from our casa to yours.
+            Join the Casa Crobu Market Club for weekly market stops, seasonal specials, preorder
+            reminders, and <strong>5% off your next market order of $20 or more.</strong> From
+            lasagna and eggplant parmigiana to Sardinian favorites, we will help you find what is
+            fresh, ready, and waiting at the booth.
           </p>
           <ul className={styles.benefits}>
             <li>
-              <span aria-hidden="true">⌖</span> Weekly market locations
+              <span aria-hidden="true">⌖</span> Weekly market stops and booth updates
             </li>
             <li>
-              <span aria-hidden="true">▣</span> Seasonal specials and preorder notes
+              <span aria-hidden="true">▣</span> Seasonal specials and preorder reminders
             </li>
             <li>
               <span aria-hidden="true">✓</span> Your 5% off code by email or text
