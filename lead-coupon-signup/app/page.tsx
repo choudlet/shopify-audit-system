@@ -295,7 +295,7 @@ function LeadSignupPage() {
                   />
                   <span className={styles.checkBox} aria-hidden="true" />
                   <span>
-                    Also text me my welcome offer, market updates, seasonal specials, and occasional
+                    Text me my welcome offer, market updates, seasonal specials, and occasional
                     Casa Crobu ordering updates. I agree to receive recurring automated marketing
                     texts from Casa Crobu. Consent is not required to purchase. Msg & data rates may
                     apply. Reply STOP to unsubscribe and HELP for help.
