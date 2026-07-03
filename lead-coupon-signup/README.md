@@ -18,7 +18,6 @@ Lightweight Next.js landing page for Casa Crobu market lead capture. The page co
    TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
    TWILIO_AUTH_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
    TWILIO_MESSAGING_SERVICE_SID=MGxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-   TWILIO_FROM_PHONE=+17205550123
    TWILIO_INBOUND_WEBHOOK_URL=https://your-vercel-app.vercel.app/api/twilio/inbound
    DEBUG_LEAD_SUBMISSIONS=false
    ```
@@ -40,8 +39,8 @@ Lightweight Next.js landing page for Casa Crobu market lead capture. The page co
 
 ## Twilio SMS setup
 
-1. In Twilio, buy or choose a sending number and complete any required U.S. A2P 10DLC or toll-free verification for Casa Crobu.
-2. Prefer a Twilio Messaging Service for production sending.
+1. In Twilio, create a Messaging Service and attach the approved sending number.
+2. Complete any required U.S. A2P 10DLC or toll-free verification for Casa Crobu.
 3. Add these Vercel env vars:
 
    ```bash
@@ -50,8 +49,7 @@ Lightweight Next.js landing page for Casa Crobu market lead capture. The page co
    TWILIO_MESSAGING_SERVICE_SID=MGxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
    ```
 
-4. If you are not using a Messaging Service, set `TWILIO_FROM_PHONE` instead.
-5. Submit a test lead with `smsOptIn=true` and confirm the welcome SMS arrives.
+4. Submit a test lead with `smsOptIn=true` and confirm the welcome SMS arrives.
 
 ## Twilio inbound opt-out setup
 
@@ -85,7 +83,7 @@ The app includes a public Twilio webhook at `/api/twilio/inbound`. Twilio can ca
 4. Deploy.
 5. Submit a test lead and confirm:
    - A Shopify customer is created or updated.
-   - Tags include `market_club`, `welcome_offer_5_off_20`, `casa_crobu`, `source_custom_landing_page`, and location/source/campaign tags when provided.
+   - Tags include `market_club`, `welcome_offer_5_off`, `casa_crobu`, `source_custom_landing_page`, and location/source/campaign tags when provided.
    - Email-opted-in customers receive `email_opt_in` for Shopify-native email flows.
    - SMS-opted-in customers receive `sms_opt_in`, the Twilio welcome SMS, and `welcome_sms_sent` after Twilio accepts the send.
    - The customer note includes submitted fields and timestamp.

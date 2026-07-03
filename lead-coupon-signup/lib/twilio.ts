@@ -13,7 +13,7 @@ type TwilioMessageResponse = {
 };
 
 const WELCOME_SMS_BODY =
-  "Grazie from Casa Crobu. Use code MARKET5 for 5% off your next market order of $20 or more. Show this text at the booth. Reply STOP to opt out, START to resubscribe.";
+  "Grazie from Casa Crobu. Use code MARKET5 for $5 off your next lasagna or purchase of $29 or more. Show this text at the booth. Reply STOP to opt out, START to resubscribe.";
 
 export async function sendWelcomeSms(lead: NormalizedLeadPayload): Promise<SmsResult> {
   if (!lead.smsOptIn || !lead.phone) {
@@ -23,9 +23,8 @@ export async function sendWelcomeSms(lead: NormalizedLeadPayload): Promise<SmsRe
   const accountSid = process.env.TWILIO_ACCOUNT_SID;
   const authToken = process.env.TWILIO_AUTH_TOKEN;
   const messagingServiceSid = process.env.TWILIO_MESSAGING_SERVICE_SID;
-  const fromPhone = process.env.TWILIO_FROM_PHONE;
 
-  if (!accountSid || !authToken || (!messagingServiceSid && !fromPhone)) {
+  if (!accountSid || !authToken || !messagingServiceSid) {
     console.error("Twilio environment variables are not configured.");
     return { sent: false, skipped: false };
   }
@@ -33,13 +32,8 @@ export async function sendWelcomeSms(lead: NormalizedLeadPayload): Promise<SmsRe
   const body = new URLSearchParams({
     To: lead.phone,
     Body: WELCOME_SMS_BODY,
+    MessagingServiceSid: messagingServiceSid,
   });
-
-  if (messagingServiceSid) {
-    body.set("MessagingServiceSid", messagingServiceSid);
-  } else if (fromPhone) {
-    body.set("From", fromPhone);
-  }
 
   try {
     const response = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`, {

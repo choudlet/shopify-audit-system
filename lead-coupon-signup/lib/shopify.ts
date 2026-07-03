@@ -1,7 +1,7 @@
 import { prefixedTag, type NormalizedLeadPayload } from "./validation";
 
 const SHOPIFY_API_VERSION = "2026-04";
-const WELCOME_OFFER_TAG = "welcome_offer_5_off_20";
+const WELCOME_OFFER_TAG = "welcome_offer_5_off";
 const WELCOME_SMS_SENT_TAG = "welcome_sms_sent";
 const SMS_OPT_IN_TAG = "sms_opt_in";
 const SMS_OPT_OUT_TAG = "sms_opt_out";

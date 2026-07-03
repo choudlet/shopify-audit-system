@@ -21,7 +21,7 @@ export type NormalizedLeadPayload = Required<Pick<LeadPayload, "firstName">> &
 
 type ValidationFailure = {
   ok: false;
-  errors: Partial<Record<keyof LeadPayload | "contact", string>>;
+  errors: Partial<Record<keyof LeadPayload | "contact" | "channel", string>>;
 };
 
 type ValidationSuccess = {
@@ -58,6 +58,10 @@ export function validateLeadPayload(payload: unknown): ValidationFailure | Valid
     errors.firstName = "First name is required.";
   }
 
+  if (!email && !phone) {
+    errors.contact = "Enter an email address or mobile number so we can send your $5 code.";
+  }
+
   if (email && !emailPattern.test(email)) {
     errors.email = "Enter a valid email address.";
   }
@@ -70,8 +74,16 @@ export function validateLeadPayload(payload: unknown): ValidationFailure | Valid
     errors.phone = "Enter a valid mobile number.";
   }
 
-  if (!email && !phone) {
-    errors.contact = "Enter either an email address or a mobile number.";
+  if (emailOptIn && !email) {
+    errors.email = "Enter your email address to receive your Market Club code.";
+  }
+
+  if (smsOptIn && !phone) {
+    errors.phone = "Enter your mobile number to receive texts from Casa Crobu.";
+  }
+
+  if (!emailOptIn && !smsOptIn) {
+    errors.channel = "Choose email or text so we can send your $5 code.";
   }
 
   if (Object.keys(errors).length > 0) {

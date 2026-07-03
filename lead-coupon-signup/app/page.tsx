@@ -5,7 +5,7 @@ import { useSearchParams } from "next/navigation";
 import styles from "./page.module.css";
 import { validateLeadPayload, type LeadPayload } from "@/lib/validation";
 
-type FieldErrors = Partial<Record<keyof LeadPayload | "contact", string>>;
+type FieldErrors = Partial<Record<keyof LeadPayload | "contact" | "channel", string>>;
 
 const initialForm: LeadPayload = {
   firstName: "",
@@ -60,7 +60,7 @@ function LeadSignupPage() {
 
   function updateField<K extends keyof LeadPayload>(field: K, value: LeadPayload[K]) {
     setForm((current) => ({ ...current, [field]: value }));
-    setErrors((current) => ({ ...current, [field]: undefined, contact: undefined }));
+    setErrors((current) => ({ ...current, [field]: undefined, contact: undefined, channel: undefined }));
     setSubmitError("");
   }
 
@@ -105,7 +105,7 @@ function LeadSignupPage() {
 
   return (
     <main className={`${styles.page} ${isEmbed ? styles.embeddedPage : ""}`}>
-      {isEmbed ? null : <div className={styles.ribbon}>Catch us at the market - 5% off your next $20+ order</div>}
+      {isEmbed ? null : <div className={styles.ribbon}>Catch us at the market - $5 off your next lasagna or $29+ order</div>}
 
       {isEmbed ? null : (
         <header className={styles.header}>
@@ -118,7 +118,7 @@ function LeadSignupPage() {
             <span>Casa Crobu</span>
           </a>
           <a className={styles.siteLink} href="https://casacrobu.com">
-            casacrobu.com <span aria-hidden="true">-&gt;</span>
+            Return to Casa Crobu
           </a>
         </header>
       )}
@@ -126,26 +126,32 @@ function LeadSignupPage() {
       <section className={styles.hero}>
         <div className={styles.copy}>
           <div className={styles.pill}>
-            <span aria-hidden="true">◇</span> Market Club - welcome offer
+            Market Club · Summer Welcome Offer
           </div>
           <h1>
-            Join the Market Club. <span>Get 5% off.</span>
+            Join the Market Club. <span>Get $5 off your next order.</span>
           </h1>
           <p className={styles.intro}>
-            Join the Casa Crobu Market Club for weekly market stops, seasonal specials, preorder
-            reminders, and <strong>5% off your next market order of $20 or more.</strong> From
-            lasagna and eggplant parmigiana to Sardinian favorites, we will help you find what is
-            fresh, ready, and waiting at the booth.
+            Join the famiglia for seasonal specials, market updates, and the best ways to enjoy Casa
+            Crobu all summer - at the market or delivered to your door.
+          </p>
+          <p className={`${styles.intro} ${styles.introFollow}`}>
+            We will send you <strong>$5 off your next lasagna or market order of $29 or more</strong>,
+            plus occasional updates on what is cooking, where to find us, and how to bring Casa
+            Crobu home.
           </p>
           <ul className={styles.benefits}>
             <li>
-              <span aria-hidden="true">⌖</span> Weekly market stops and booth updates
+              <span aria-hidden="true">⌖</span> Know where to find us each week
             </li>
             <li>
-              <span aria-hidden="true">✦</span> Seasonal specials and preorder reminders
+              <span aria-hidden="true">✦</span> First look at seasonal specials and market favorites
             </li>
             <li>
-              <span aria-hidden="true">✓</span> Your 5% off code by email or text
+              <span aria-hidden="true">⌂</span> Easy ways to enjoy Casa Crobu at home
+            </li>
+            <li>
+              <span aria-hidden="true">✓</span> Your $5 off code by email or text
             </li>
           </ul>
         </div>
@@ -177,8 +183,11 @@ function LeadSignupPage() {
 
               <div className={styles.formHeading}>
                 <p className={styles.kicker}>Market Club</p>
-                <h2>Claim your 5% off</h2>
-                <p>Sign up below and we will send your code.</p>
+                <h2>Claim your $5 Market Club code</h2>
+                <p>
+                  Sign up and we will send your code, plus occasional market updates, seasonal
+                  specials, and ways to order Casa Crobu at home.
+                </p>
               </div>
 
               <div className={styles.fieldGrid}>
@@ -212,6 +221,11 @@ function LeadSignupPage() {
                   />
                 </label>
               </div>
+
+              <p className={styles.fieldHint}>
+                Share your email, mobile number, or both so we can send your $5 code and stay in
+                touch.
+              </p>
 
               <label>
                 <span>Email</span>
@@ -265,37 +279,44 @@ function LeadSignupPage() {
                 <label>
                   <input
                     type="checkbox"
-                    checked={form.smsOptIn}
-                    onChange={(event) => updateField("smsOptIn", event.target.checked)}
+                    checked={form.emailOptIn}
+                    onChange={(event) => updateField("emailOptIn", event.target.checked)}
                   />
                   <span className={styles.checkBox} aria-hidden="true" />
                   <span>
-                    Text me my 5% off code and occasional Casa Crobu market updates. By checking
-                    this box, I agree to receive recurring automated marketing text messages from
-                    Casa Crobu. Consent is not a condition of purchase. Msg & data rates may apply.
-                    Reply STOP to unsubscribe and HELP for help.
+                    Email me my $5 code, weekly market locations, seasonal specials, and occasional
+                    ways to order Casa Crobu at home.
                   </span>
                 </label>
                 <label>
                   <input
                     type="checkbox"
-                    checked={form.emailOptIn}
-                    onChange={(event) => updateField("emailOptIn", event.target.checked)}
+                    checked={form.smsOptIn}
+                    onChange={(event) => updateField("smsOptIn", event.target.checked)}
                   />
                   <span className={styles.checkBox} aria-hidden="true" />
-                  <span>Email me my 5% off code, weekly market locations, and occasional Casa Crobu updates.</span>
+                  <span>
+                    Also text me my $5 code, market updates, seasonal specials, and occasional Casa
+                    Crobu ordering updates. I agree to receive recurring automated marketing texts
+                    from Casa Crobu. Consent is not required to purchase. Msg & data rates may
+                    apply. Reply STOP to unsubscribe and HELP for help.
+                  </span>
                 </label>
               </div>
+
+              {errors.channel ? <p className={styles.inlineError}>{errors.channel}</p> : null}
 
               {submitError ? <p className={styles.submitError}>{submitError}</p> : null}
 
               <button className={styles.submitButton} type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Sending..." : "Join the Market Club"}
+                {isSubmitting ? "Sending..." : "Get My $5 Code"}
               </button>
 
               <p className={styles.finePrint}>
-                Offer valid on one market order of $20 or more. One use per customer. Casa Crobu
-                will not sell or share your information.
+                Offer valid on one lasagna or one market order of $29 or more. One use per
+                customer. Casa Crobu will never sell your information.
+                <br />
+                <a href="https://casacrobu.com/policies/privacy-policy">Privacy Policy</a>
               </p>
             </form>
           )}
