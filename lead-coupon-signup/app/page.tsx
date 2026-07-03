@@ -50,6 +50,7 @@ function LeadSignupPage() {
   const isEmbed = searchParams.get("embed") === "1" || searchParams.get("embed") === "true";
   const urlLocation = searchParams.get("location") || searchParams.get("market") || "";
   const shouldShowLocationSelect = !urlLocation;
+  const outboundLinkTarget = isEmbed ? "_top" : undefined;
   const [form, setForm] = useState<LeadPayload>(initialForm);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -109,7 +110,7 @@ function LeadSignupPage() {
 
       {isEmbed ? null : (
         <header className={styles.header}>
-          <a className={styles.brand} href="https://casacrobu.com/" aria-label="Casa Crobu home">
+          <a className={styles.brand} href="https://casacrobu.com/" target={outboundLinkTarget} aria-label="Casa Crobu home">
             <img
               className={styles.logoImage}
               src="https://casacrobu.com/cdn/shop/files/websitelogotransparent_e3945784-8899-4a2b-9751-c1b9ea06206a_360x.gif?v=1614774856"
@@ -117,7 +118,7 @@ function LeadSignupPage() {
             />
             <span>Casa Crobu</span>
           </a>
-          <a className={styles.siteLink} href="https://casacrobu.com/">
+          <a className={styles.siteLink} href="https://casacrobu.com/" target={outboundLinkTarget}>
             Return to Casa Crobu
           </a>
         </header>
@@ -164,7 +165,7 @@ function LeadSignupPage() {
                 We received your signup. Check your text or email for your offer, or give the phone
                 number you used to sign up at the booth so we can apply it for you.
               </p>
-              <a className={styles.secondaryButton} href="https://casacrobu.com/">
+              <a className={styles.secondaryButton} href="https://casacrobu.com/" target={outboundLinkTarget}>
                 Return to Casa Crobu
               </a>
             </div>
@@ -315,7 +316,9 @@ function LeadSignupPage() {
                 Offer valid on one lasagna or one market order of $29 or more. One use per
                 customer. Casa Crobu will never sell your information.
                 <br />
-                <a href="https://casacrobu.com/policies/privacy-policy">Privacy Policy</a>
+                <a href="https://casacrobu.com/policies/privacy-policy" target={outboundLinkTarget}>
+                  Privacy Policy
+                </a>
               </p>
             </form>
           )}
@@ -325,7 +328,9 @@ function LeadSignupPage() {
       {isEmbed ? null : (
         <footer className={styles.footer}>
           © 2026 Casa Crobu · Authentic Italian, home delivered ·{" "}
-          <a href="https://casacrobu.com/">casacrobu.com</a>
+          <a href="https://casacrobu.com/" target={outboundLinkTarget}>
+            casacrobu.com
+          </a>
         </footer>
       )}
     </main>
