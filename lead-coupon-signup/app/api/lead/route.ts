@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import { createOrUpdateShopifyCustomer } from "@/lib/shopify";
-import { sendWelcomeSms } from "@/lib/twilio";
-import { validateLeadPayload, type NormalizedLeadPayload } from "@/lib/validation";
+import { createOrUpdateShopifyCustomer, markCustomerWelcomeSmsSent } from "@/lib/shopify";
+import { sendWelcomeSms, type SmsResult } from "@/lib/twilio";
+import { validateLeadPayload } from "@/lib/validation";
 
 export async function POST(request: Request) {
   let json: unknown;
@@ -28,18 +28,29 @@ export async function POST(request: Request) {
     }
 
     const shopifyResult = await createOrUpdateShopifyCustomer(validation.data);
-    const sms = shopifyResult.shouldSendWelcome
+    const sms: SmsResult = shopifyResult.shouldSendWelcomeSms
       ? await sendWelcomeSms(validation.data)
-      : { sent: false, skipped: true, reason: "welcome_offer_already_sent" };
-    const notification = await notifyMake(validation.data, shopifyResult.customerId);
+      : { sent: false, skipped: true, reason: "welcome_sms_already_sent" };
+    let welcomeSmsTagged = false;
+
+    if (sms.sent) {
+      try {
+        await markCustomerWelcomeSmsSent(shopifyResult.customerId);
+        welcomeSmsTagged = true;
+      } catch (error) {
+        console.error("Could not tag welcome SMS as sent", error);
+      }
+    }
 
     return NextResponse.json({
       ok: true,
       customerId: shopifyResult.customerId,
       action: shopifyResult.action,
       smsSent: sms.sent,
+      smsSid: sms.sid,
       welcomeAlreadySent: shopifyResult.alreadyHadWelcomeOffer,
-      notificationSent: notification.sent,
+      welcomeSmsAlreadySent: shopifyResult.alreadyHadWelcomeSms,
+      welcomeSmsTagged,
     });
   } catch (error) {
     console.error("Lead submission failed", error);
@@ -56,49 +67,4 @@ export async function POST(request: Request) {
 
 export function GET() {
   return NextResponse.json({ ok: false, error: "Method not allowed." }, { status: 405 });
-}
-
-async function notifyMake(lead: NormalizedLeadPayload, shopifyCustomerId: string) {
-  const webhookUrl = process.env.MAKE_WEBHOOK_URL;
-
-  if (!webhookUrl) {
-    return { sent: false, skipped: true };
-  }
-
-  const payload = {
-    event: "lead_form_submitted",
-    firstName: lead.firstName,
-    lastName: lead.lastName || "",
-    email: lead.email || "",
-    phone: lead.phone || "",
-    market: lead.market || "",
-    location: lead.location || lead.market || "",
-    source: lead.source || "",
-    channel: lead.channel || lead.source || "",
-    campaign: lead.campaign || "",
-    message: lead.message || "",
-    smsOptIn: Boolean(lead.smsOptIn),
-    emailOptIn: Boolean(lead.emailOptIn),
-    shopifyCustomerId,
-    internalNotificationPhone: process.env.INTERNAL_NOTIFICATION_PHONE || "",
-    submittedAt: lead.submittedAt,
-  };
-
-  try {
-    const response = await fetch(webhookUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    if (!response.ok) {
-      console.error("Make webhook failed", { status: response.status });
-      return { sent: false, skipped: false };
-    }
-
-    return { sent: true, skipped: false };
-  } catch (error) {
-    console.error("Make webhook request failed", error);
-    return { sent: false, skipped: false };
-  }
 }

@@ -1,6 +1,6 @@
 # Casa Crobu Lead/Coupon Signup
 
-Lightweight Next.js landing page for Casa Crobu market lead capture. The page collects customer contact details, posts only to the serverless `/api/lead` route, creates or updates a Shopify customer through the Admin GraphQL API, sends the welcome SMS through Twilio when SMS opt-in is present, and can optionally post a clean notification payload to a Make webhook.
+Lightweight Next.js landing page for Casa Crobu market lead capture. The page collects customer contact details, posts only to the serverless `/api/lead` route, creates or updates a Shopify customer through the Admin GraphQL API, tags the customer for Shopify-native email flows, and sends the welcome SMS through Twilio when SMS opt-in is present.
 
 ## Local setup
 
@@ -15,13 +15,11 @@ Lightweight Next.js landing page for Casa Crobu market lead capture. The page co
    ```bash
    SHOPIFY_SHOP_DOMAIN=casa-crobu.myshopify.com
    SHOPIFY_ADMIN_ACCESS_TOKEN=shpat_xxx
-   MAKE_WEBHOOK_URL=https://hook.us1.make.com/xxx
-   INTERNAL_NOTIFICATION_PHONE=+17205550123
    TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
    TWILIO_AUTH_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
    TWILIO_MESSAGING_SERVICE_SID=MGxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
    TWILIO_FROM_PHONE=+17205550123
-   WELCOME_SMS_BODY=Grazie from Casa Crobu. Use code MARKET5 for 5% off your next market order of $20 or more. Show this text at the booth. Reply STOP to opt out.
+   TWILIO_INBOUND_WEBHOOK_URL=https://your-vercel-app.vercel.app/api/twilio/inbound
    DEBUG_LEAD_SUBMISSIONS=false
    ```
 
@@ -50,37 +48,34 @@ Lightweight Next.js landing page for Casa Crobu market lead capture. The page co
    TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
    TWILIO_AUTH_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
    TWILIO_MESSAGING_SERVICE_SID=MGxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-   WELCOME_SMS_BODY=Grazie from Casa Crobu. Use code MARKET5 for 5% off your next market order of $20 or more. Show this text at the booth. Reply STOP to opt out.
    ```
 
 4. If you are not using a Messaging Service, set `TWILIO_FROM_PHONE` instead.
 5. Submit a test lead with `smsOptIn=true` and confirm the welcome SMS arrives.
 
-## Make webhook setup
+## Twilio inbound opt-out setup
 
-Make is optional if Twilio is handling the welcome SMS directly. Keep Make if you want internal notifications, debug logging, email delivery, or later workflow routing.
+The app includes a public Twilio webhook at `/api/twilio/inbound`. Twilio can call this route when customers reply to the toll-free number. The route validates Twilio's request signature with `TWILIO_AUTH_TOKEN`, then syncs recognized SMS preference replies back to Shopify.
 
-1. Create a Make scenario with a custom webhook trigger.
-2. Copy the webhook URL into `MAKE_WEBHOOK_URL`.
-3. Configure Make to send the internal SMS notification. Use `INTERNAL_NOTIFICATION_PHONE` in Vercel if the scenario expects the recipient in the payload.
-4. The app sends this payload after Shopify succeeds:
+1. In Twilio, open **Messaging > Services** and select the Casa Crobu Messaging Service.
+2. Go to the service's **Integration** or **Incoming Messages** settings.
+3. Set the incoming message webhook to:
 
-   ```json
-   {
-     "event": "lead_form_submitted",
-     "firstName": "Maria",
-     "lastName": "Rossi",
-     "email": "maria@example.com",
-     "phone": "+15551234567",
-     "market": "South Pearl Street",
-     "message": "Favorite dish or pickup note",
-     "smsOptIn": true,
-     "emailOptIn": true,
-     "shopifyCustomerId": "gid://shopify/Customer/123",
-     "internalNotificationPhone": "+17205550123",
-     "submittedAt": "2026-06-11T00:00:00.000Z"
-   }
+   ```text
+   https://your-vercel-app.vercel.app/api/twilio/inbound
    ```
+
+4. Add the same full URL to Vercel as:
+
+   ```bash
+   TWILIO_INBOUND_WEBHOOK_URL=https://your-vercel-app.vercel.app/api/twilio/inbound
+   ```
+
+5. Redeploy after setting the env var.
+6. Test with a Shopify customer that has the same phone number:
+   - Reply `STOP`; Shopify should remove `sms_opt_in`, add `sms_opt_out`, and append a customer note.
+   - Reply `START` or `UNSTOP`; Shopify should remove `sms_opt_out`, add `sms_opt_in`, and append a customer note.
+   - Reply `HELP`; Shopify should append a customer note without changing opt-in tags.
 
 ## Deploy to Vercel
 
@@ -90,9 +85,10 @@ Make is optional if Twilio is handling the welcome SMS directly. Keep Make if yo
 4. Deploy.
 5. Submit a test lead and confirm:
    - A Shopify customer is created or updated.
-   - Tags include `website-lead`, `coupon-signup`, `casa-crobu`, `source-custom-landing-page`, and `market-{market}` when a market is provided.
+   - Tags include `market_club`, `welcome_offer_5_off_20`, `casa_crobu`, `source_custom_landing_page`, and location/source/campaign tags when provided.
+   - Email-opted-in customers receive `email_opt_in` for Shopify-native email flows.
+   - SMS-opted-in customers receive `sms_opt_in`, the Twilio welcome SMS, and `welcome_sms_sent` after Twilio accepts the send.
    - The customer note includes submitted fields and timestamp.
-   - The Make scenario receives the webhook payload.
 
 ## Shopify linking and embedding
 

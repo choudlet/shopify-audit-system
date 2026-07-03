@@ -1,15 +1,19 @@
 import type { NormalizedLeadPayload } from "./validation";
 
-type SmsResult = {
+export type SmsResult = {
   sent: boolean;
   skipped: boolean;
   sid?: string;
+  reason?: string;
 };
 
 type TwilioMessageResponse = {
   sid?: string;
   message?: string;
 };
+
+const WELCOME_SMS_BODY =
+  "Grazie from Casa Crobu. Use code MARKET5 for 5% off your next market order of $20 or more. Show this text at the booth. Reply STOP to opt out, START to resubscribe.";
 
 export async function sendWelcomeSms(lead: NormalizedLeadPayload): Promise<SmsResult> {
   if (!lead.smsOptIn || !lead.phone) {
@@ -28,9 +32,7 @@ export async function sendWelcomeSms(lead: NormalizedLeadPayload): Promise<SmsRe
 
   const body = new URLSearchParams({
     To: lead.phone,
-    Body:
-      process.env.WELCOME_SMS_BODY ||
-      "Grazie from Casa Crobu. Use code MARKET5 for 5% off your next market order of $20 or more. Show this text at the booth. Reply STOP to opt out.",
+    Body: WELCOME_SMS_BODY,
   });
 
   if (messagingServiceSid) {

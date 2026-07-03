@@ -2,6 +2,9 @@ import { prefixedTag, type NormalizedLeadPayload } from "./validation";
 
 const SHOPIFY_API_VERSION = "2026-04";
 const WELCOME_OFFER_TAG = "welcome_offer_5_off_20";
+const WELCOME_SMS_SENT_TAG = "welcome_sms_sent";
+const SMS_OPT_IN_TAG = "sms_opt_in";
+const SMS_OPT_OUT_TAG = "sms_opt_out";
 
 type ShopifyCustomer = {
   id: string;
@@ -22,8 +25,9 @@ type ShopifyResponse<T> = {
 type UpsertCustomerResult = {
   customerId: string;
   action: "created" | "updated";
-  shouldSendWelcome: boolean;
+  shouldSendWelcomeSms: boolean;
   alreadyHadWelcomeOffer: boolean;
+  alreadyHadWelcomeSms: boolean;
 };
 
 const CREATE_CUSTOMER_MUTATION = `
@@ -68,6 +72,34 @@ const FIND_CUSTOMER_QUERY = `
   }
 `;
 
+const TAGS_ADD_MUTATION = `
+  mutation TagsAdd($id: ID!, $tags: [String!]!) {
+    tagsAdd(id: $id, tags: $tags) {
+      node {
+        id
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;
+
+const TAGS_REMOVE_MUTATION = `
+  mutation TagsRemove($id: ID!, $tags: [String!]!) {
+    tagsRemove(id: $id, tags: $tags) {
+      node {
+        id
+      }
+      userErrors {
+        field
+        message
+      }
+    }
+  }
+`;
+
 export async function createOrUpdateShopifyCustomer(lead: NormalizedLeadPayload): Promise<UpsertCustomerResult> {
   const tags = buildTags(lead);
   const note = buildLeadNote(lead);
@@ -100,8 +132,9 @@ export async function createOrUpdateShopifyCustomer(lead: NormalizedLeadPayload)
     return {
       customerId: createdCustomerId,
       action: "created",
-      shouldSendWelcome: true,
+      shouldSendWelcomeSms: true,
       alreadyHadWelcomeOffer: false,
+      alreadyHadWelcomeSms: false,
     };
   }
 
@@ -121,6 +154,7 @@ async function updateExistingCustomer(
   note: string,
 ): Promise<UpsertCustomerResult> {
   const alreadyHadWelcomeOffer = hasTag(existingCustomer.tags, WELCOME_OFFER_TAG);
+  const alreadyHadWelcomeSms = hasTag(existingCustomer.tags, WELCOME_SMS_SENT_TAG);
 
   const updateResult = await shopifyGraphql<{
     customerUpdate: {
@@ -149,9 +183,48 @@ async function updateExistingCustomer(
   return {
     customerId: updatedCustomerId,
     action: "updated",
-    shouldSendWelcome: !alreadyHadWelcomeOffer,
+    shouldSendWelcomeSms: !alreadyHadWelcomeSms,
     alreadyHadWelcomeOffer,
+    alreadyHadWelcomeSms,
   };
+}
+
+export async function markCustomerWelcomeSmsSent(customerId: string): Promise<void> {
+  await addCustomerTags(customerId, [WELCOME_SMS_SENT_TAG]);
+}
+
+type SmsPreferenceEvent = {
+  phone: string;
+  action: "opt_out" | "opt_in" | "help";
+  body: string;
+  messageSid?: string;
+  receivedAt: string;
+};
+
+type SmsPreferenceResult = {
+  customerFound: boolean;
+  customerId?: string;
+  action: SmsPreferenceEvent["action"];
+};
+
+export async function syncCustomerSmsPreference(event: SmsPreferenceEvent): Promise<SmsPreferenceResult> {
+  const customer = await findCustomer(`phone:${escapeSearchValue(event.phone)}`);
+
+  if (!customer) {
+    return { customerFound: false, action: event.action };
+  }
+
+  if (event.action === "opt_out") {
+    await removeCustomerTags(customer.id, [SMS_OPT_IN_TAG]);
+    await addCustomerTags(customer.id, [SMS_OPT_OUT_TAG]);
+  } else if (event.action === "opt_in") {
+    await removeCustomerTags(customer.id, [SMS_OPT_OUT_TAG]);
+    await addCustomerTags(customer.id, [SMS_OPT_IN_TAG]);
+  }
+
+  await updateCustomerNote(customer.id, appendNote(customer.note, buildSmsPreferenceNote(event)));
+
+  return { customerFound: true, customerId: customer.id, action: event.action };
 }
 
 function buildTags(lead: NormalizedLeadPayload): string[] {
@@ -183,10 +256,28 @@ function buildTags(lead: NormalizedLeadPayload): string[] {
   }
 
   if (lead.phone && lead.smsOptIn) {
-    tags.push("sms_opt_in");
+    tags.push(SMS_OPT_IN_TAG);
   }
 
   return tags;
+}
+
+function buildSmsPreferenceNote(event: SmsPreferenceEvent): string {
+  const actionLabel = {
+    opt_out: "SMS opt-out",
+    opt_in: "SMS opt-in",
+    help: "SMS help request",
+  }[event.action];
+
+  return [
+    `Casa Crobu ${actionLabel}`,
+    `Received at: ${event.receivedAt}`,
+    `Phone: ${event.phone}`,
+    event.messageSid ? `Twilio message SID: ${event.messageSid}` : null,
+    `Message body: ${event.body}`,
+  ]
+    .filter(Boolean)
+    .join("\n");
 }
 
 function buildLeadNote(lead: NormalizedLeadPayload): string {
@@ -214,6 +305,56 @@ function appendNote(existingNote: string | null | undefined, note: string): stri
 
 function mergeTags(existingTags: string[], newTags: string[]): string[] {
   return Array.from(new Set([...existingTags, ...newTags]));
+}
+
+async function addCustomerTags(customerId: string, tags: string[]): Promise<void> {
+  const result = await shopifyGraphql<{
+    tagsAdd: {
+      node?: { id: string } | null;
+      userErrors: ShopifyUserError[];
+    };
+  }>(TAGS_ADD_MUTATION, { id: customerId, tags });
+
+  const errors = result.tagsAdd.userErrors;
+
+  if (!result.tagsAdd.node?.id || errors.length > 0) {
+    throw new Error(errors[0]?.message || "Shopify could not add customer tags.");
+  }
+}
+
+async function removeCustomerTags(customerId: string, tags: string[]): Promise<void> {
+  const result = await shopifyGraphql<{
+    tagsRemove: {
+      node?: { id: string } | null;
+      userErrors: ShopifyUserError[];
+    };
+  }>(TAGS_REMOVE_MUTATION, { id: customerId, tags });
+
+  const errors = result.tagsRemove.userErrors;
+
+  if (!result.tagsRemove.node?.id || errors.length > 0) {
+    throw new Error(errors[0]?.message || "Shopify could not remove customer tags.");
+  }
+}
+
+async function updateCustomerNote(customerId: string, note: string): Promise<void> {
+  const result = await shopifyGraphql<{
+    customerUpdate: {
+      customer?: { id: string } | null;
+      userErrors: ShopifyUserError[];
+    };
+  }>(UPDATE_CUSTOMER_MUTATION, {
+    input: {
+      id: customerId,
+      note,
+    },
+  });
+
+  const errors = result.customerUpdate.userErrors;
+
+  if (!result.customerUpdate.customer?.id || errors.length > 0) {
+    throw new Error(errors[0]?.message || "Shopify could not update the customer note.");
+  }
 }
 
 async function findExistingCustomer(lead: NormalizedLeadPayload): Promise<ShopifyCustomer | null> {
