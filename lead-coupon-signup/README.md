@@ -19,6 +19,10 @@ Lightweight Next.js landing page for Casa Crobu market lead capture. The page co
    TWILIO_AUTH_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
    TWILIO_MESSAGING_SERVICE_SID=MGxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
    TWILIO_INBOUND_WEBHOOK_URL=https://your-vercel-app.vercel.app/api/twilio/inbound
+   GOOGLE_SHEETS_CLIENT_EMAIL=casa-crobu-sheets@casa-crobu.iam.gserviceaccount.com
+   GOOGLE_SHEETS_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+   GOOGLE_SHEETS_SMS_LOG_SPREADSHEET_ID=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   GOOGLE_SHEETS_SMS_LOG_SHEET_NAME=Inbound SMS
    DEBUG_LEAD_SUBMISSIONS=false
    ```
 
@@ -53,7 +57,7 @@ Lightweight Next.js landing page for Casa Crobu market lead capture. The page co
 
 ## Twilio inbound opt-out setup
 
-The app includes a public Twilio webhook at `/api/twilio/inbound`. Twilio can call this route when customers reply to the toll-free number. The route validates Twilio's request signature with `TWILIO_AUTH_TOKEN`, then syncs recognized SMS preference replies back to Shopify.
+The app includes a public Twilio webhook at `/api/twilio/inbound`. Twilio can call this route when customers reply to the toll-free number. The route validates Twilio's request signature with `TWILIO_AUTH_TOKEN`, logs valid inbound messages to Google Sheets when configured, then syncs recognized SMS preference replies back to Shopify.
 
 1. In Twilio, open **Messaging > Services** and select the Casa Crobu Messaging Service.
 2. Go to the service's **Integration** or **Incoming Messages** settings.
@@ -74,6 +78,30 @@ The app includes a public Twilio webhook at `/api/twilio/inbound`. Twilio can ca
    - Reply `STOP`; Shopify should remove `sms_opt_in`, add `sms_opt_out`, and append a customer note.
    - Reply `START` or `UNSTOP`; Shopify should remove `sms_opt_out`, add `sms_opt_in`, and append a customer note.
    - Reply `HELP`; Shopify should append a customer note without changing opt-in tags.
+
+## Google Sheets inbound SMS log
+
+The inbound Twilio webhook can append every valid inbound SMS to a Google Sheet. Shopify tags remain the source of truth for SMS segments; the Sheet is an audit log.
+
+1. Create a Sheet with a tab named `Inbound SMS`.
+2. Add this header row:
+
+   ```text
+   received_at	from_phone	body	opt_out_type	action	message_sid	customer_found	shopify_customer_id	sync_status	error
+   ```
+
+3. Share the Sheet with the service account email as **Editor**.
+4. Enable the Google Sheets API in the service account's Google Cloud project.
+5. Add these Vercel env vars from the service account JSON key:
+
+   ```bash
+   GOOGLE_SHEETS_CLIENT_EMAIL=casa-crobu-sheets@casa-crobu.iam.gserviceaccount.com
+   GOOGLE_SHEETS_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+   GOOGLE_SHEETS_SMS_LOG_SPREADSHEET_ID=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+   GOOGLE_SHEETS_SMS_LOG_SHEET_NAME=Inbound SMS
+   ```
+
+`GOOGLE_SHEETS_SMS_LOG_SPREADSHEET_ID` is the long ID in the Sheet URL between `/d/` and `/edit`.
 
 ## Deploy to Vercel
 

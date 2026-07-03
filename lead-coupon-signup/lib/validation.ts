@@ -59,7 +59,7 @@ export function validateLeadPayload(payload: unknown): ValidationFailure | Valid
   }
 
   if (!email && !phone) {
-    errors.contact = "Enter an email address or mobile number so we can send your $5 code.";
+    errors.contact = "Enter an email address or mobile number so we can connect MARKET5 to your signup.";
   }
 
   if (email && !emailPattern.test(email)) {
@@ -75,7 +75,7 @@ export function validateLeadPayload(payload: unknown): ValidationFailure | Valid
   }
 
   if (emailOptIn && !email) {
-    errors.email = "Enter your email address to receive your Market Club code.";
+    errors.email = "Enter your email address to receive Market Club updates.";
   }
 
   if (smsOptIn && !phone) {
@@ -83,7 +83,7 @@ export function validateLeadPayload(payload: unknown): ValidationFailure | Valid
   }
 
   if (!emailOptIn && !smsOptIn) {
-    errors.channel = "Choose email or text so we can send your $5 code.";
+    errors.channel = "Choose email or text so we can connect MARKET5 to your signup.";
   }
 
   if (Object.keys(errors).length > 0) {

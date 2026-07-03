@@ -136,9 +136,8 @@ function LeadSignupPage() {
             Crobu all summer - at the market or delivered to your door.
           </p>
           <p className={`${styles.intro} ${styles.introFollow}`}>
-            We will send you <strong>$5 off your next lasagna or market order of $29 or more</strong>,
-            plus occasional updates on what is cooking, where to find us, and how to bring Casa
-            Crobu home.
+            Use <strong>MARKET5 for $5 off your next lasagna or market order of $29 or more</strong>.
+            At the booth, give the phone number you used to sign up so we can apply it for you.
           </p>
           <ul className={styles.benefits}>
             <li>
@@ -151,7 +150,7 @@ function LeadSignupPage() {
               <span aria-hidden="true">⌂</span> Easy ways to enjoy Casa Crobu at home
             </li>
             <li>
-              <span aria-hidden="true">✓</span> Your $5 off code by email or text
+              <span aria-hidden="true">✓</span> MARKET5 applied at the booth with your phone number
             </li>
           </ul>
         </div>
@@ -162,8 +161,8 @@ function LeadSignupPage() {
               <p className={styles.kicker}>You are in the Market Club</p>
               <h2>Grazie, {firstName}.</h2>
               <p>
-                We received your signup and will send the code to the contact info you provided. See
-                you at the market.
+                We received your signup. Use MARKET5 online, or give the phone number you used to
+                sign up at the booth so we can apply it for you.
               </p>
               <a className={styles.secondaryButton} href="https://casacrobu.com">
                 Return to Casa Crobu
@@ -183,10 +182,10 @@ function LeadSignupPage() {
 
               <div className={styles.formHeading}>
                 <p className={styles.kicker}>Market Club</p>
-                <h2>Claim your $5 Market Club code</h2>
+                <h2>Claim MARKET5 for $5 off</h2>
                 <p>
-                  Sign up and we will send your code, plus occasional market updates, seasonal
-                  specials, and ways to order Casa Crobu at home.
+                  Sign up and use MARKET5 online, or give your signup phone number at the booth so
+                  we can apply it for you.
                 </p>
               </div>
 
@@ -223,8 +222,8 @@ function LeadSignupPage() {
               </div>
 
               <p className={styles.fieldHint}>
-                Share your email, mobile number, or both so we can send your $5 code and stay in
-                touch.
+                Share your email, mobile number, or both so we can connect MARKET5 to your Market
+                Club signup.
               </p>
 
               <label>
@@ -284,7 +283,7 @@ function LeadSignupPage() {
                   />
                   <span className={styles.checkBox} aria-hidden="true" />
                   <span>
-                    Email me my $5 code, weekly market locations, seasonal specials, and occasional
+                    Email me MARKET5, weekly market locations, seasonal specials, and occasional
                     ways to order Casa Crobu at home.
                   </span>
                 </label>
@@ -296,7 +295,7 @@ function LeadSignupPage() {
                   />
                   <span className={styles.checkBox} aria-hidden="true" />
                   <span>
-                    Also text me my $5 code, market updates, seasonal specials, and occasional Casa
+                    Also text me MARKET5, market updates, seasonal specials, and occasional Casa
                     Crobu ordering updates. I agree to receive recurring automated marketing texts
                     from Casa Crobu. Consent is not required to purchase. Msg & data rates may
                     apply. Reply STOP to unsubscribe and HELP for help.
@@ -309,7 +308,7 @@ function LeadSignupPage() {
               {submitError ? <p className={styles.submitError}>{submitError}</p> : null}
 
               <button className={styles.submitButton} type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Sending..." : "Get My $5 Code"}
+                {isSubmitting ? "Sending..." : "Get MARKET5"}
               </button>
 
               <p className={styles.finePrint}>

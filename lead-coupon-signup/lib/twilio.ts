@@ -13,7 +13,7 @@ type TwilioMessageResponse = {
 };
 
 const WELCOME_SMS_BODY =
-  "Grazie from Casa Crobu. Use code MARKET5 for $5 off your next lasagna or purchase of $29 or more. Show this text at the booth. Reply STOP to opt out, START to resubscribe.";
+  "Grazie from Casa Crobu. Use code MARKET5 for $5 off your next lasagna or purchase of $29 or more. To redeem at the booth, give the phone number you used to sign up. Reply STOP to opt out.";
 
 export async function sendWelcomeSms(lead: NormalizedLeadPayload): Promise<SmsResult> {
   if (!lead.smsOptIn || !lead.phone) {

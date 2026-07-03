@@ -1,5 +1,6 @@
 import { createHmac, timingSafeEqual } from "crypto";
 import { NextResponse } from "next/server";
+import { appendInboundSmsLog, type InboundSmsLog } from "@/lib/google-sheets";
 import { syncCustomerSmsPreference } from "@/lib/shopify";
 
 type SmsPreferenceAction = "opt_out" | "opt_in" | "help";
@@ -17,8 +18,22 @@ export async function POST(request: Request) {
   const optOutType = cleanText(params.get("OptOutType")).toUpperCase();
   const messageSid = cleanText(params.get("MessageSid"));
   const action = getSmsPreferenceAction(optOutType, body);
+  const receivedAt = new Date().toISOString();
+  let log: InboundSmsLog = {
+    receivedAt,
+    fromPhone: phone,
+    body,
+    optOutType,
+    action: action || "unrecognized",
+    messageSid,
+    customerFound: null,
+    shopifyCustomerId: "",
+    syncStatus: action ? "pending" : "skipped_unrecognized",
+    error: "",
+  };
 
   if (!phone || !action) {
+    await appendInboundSmsLogSafely(log);
     return twimlResponse();
   }
 
@@ -28,8 +43,15 @@ export async function POST(request: Request) {
       action,
       body,
       messageSid,
-      receivedAt: new Date().toISOString(),
+      receivedAt,
     });
+
+    log = {
+      ...log,
+      customerFound: result.customerFound,
+      shopifyCustomerId: result.customerId || "",
+      syncStatus: result.customerFound ? "synced" : "customer_not_found",
+    };
 
     if (!result.customerFound) {
       console.info("Twilio inbound SMS preference event did not match a Shopify customer", {
@@ -40,8 +62,16 @@ export async function POST(request: Request) {
     }
   } catch (error) {
     console.error("Twilio inbound SMS preference sync failed", error);
+    log = {
+      ...log,
+      syncStatus: "sync_failed",
+      error: getErrorMessage(error),
+    };
+    await appendInboundSmsLogSafely(log);
     return NextResponse.json({ ok: false, error: "Preference sync failed." }, { status: 500 });
   }
+
+  await appendInboundSmsLogSafely(log);
 
   return twimlResponse();
 }
@@ -100,6 +130,18 @@ function cleanText(value: string | null): string {
 
 function maskPhone(phone: string): string {
   return phone.length > 4 ? `***${phone.slice(-4)}` : "***";
+}
+
+async function appendInboundSmsLogSafely(log: InboundSmsLog): Promise<void> {
+  try {
+    await appendInboundSmsLog(log);
+  } catch (error) {
+    console.error("Could not append inbound SMS log to Google Sheets", error);
+  }
+}
+
+function getErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : "Unknown error";
 }
 
 function twimlResponse(): Response {
