@@ -13,13 +13,17 @@ type TwilioMessageResponse = {
 };
 
 const WELCOME_SMS_BODY =
-  "Grazie from Casa Crobu. Use code MARKET5 for $5 off your next lasagna or purchase of $29 or more. To redeem at the booth, give the phone number you used to sign up. Reply STOP to opt out.";
+  "Benvenuto to the Casa Crobu Market Club. Use code MARKET5 for $5 off your next lasagna or purchase of $29 or more. To redeem at the booth, give the phone number you used to sign up. Reply STOP to opt out.";
 
 export async function sendWelcomeSms(lead: NormalizedLeadPayload): Promise<SmsResult> {
   if (!lead.smsOptIn || !lead.phone) {
     return { sent: false, skipped: true };
   }
 
+  return sendSms(lead.phone, WELCOME_SMS_BODY);
+}
+
+export async function sendSms(to: string, message: string): Promise<SmsResult> {
   const accountSid = process.env.TWILIO_ACCOUNT_SID;
   const authToken = process.env.TWILIO_AUTH_TOKEN;
   const messagingServiceSid = process.env.TWILIO_MESSAGING_SERVICE_SID;
@@ -30,8 +34,8 @@ export async function sendWelcomeSms(lead: NormalizedLeadPayload): Promise<SmsRe
   }
 
   const body = new URLSearchParams({
-    To: lead.phone,
-    Body: WELCOME_SMS_BODY,
+    To: to,
+    Body: message,
     MessagingServiceSid: messagingServiceSid,
   });
 
@@ -48,7 +52,7 @@ export async function sendWelcomeSms(lead: NormalizedLeadPayload): Promise<SmsRe
     const result = (await response.json()) as TwilioMessageResponse;
 
     if (!response.ok) {
-      console.error("Twilio welcome SMS failed", {
+      console.error("Twilio SMS failed", {
         status: response.status,
         message: result.message || "Unknown Twilio error",
       });
@@ -57,7 +61,7 @@ export async function sendWelcomeSms(lead: NormalizedLeadPayload): Promise<SmsRe
 
     return { sent: true, skipped: false, sid: result.sid };
   } catch (error) {
-    console.error("Twilio welcome SMS request failed", error);
+    console.error("Twilio SMS request failed", error);
     return { sent: false, skipped: false };
   }
 }

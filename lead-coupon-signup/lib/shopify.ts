@@ -30,6 +30,12 @@ type UpsertCustomerResult = {
   alreadyHadWelcomeSms: boolean;
 };
 
+type CustomerMarketingConsentInput = {
+  consentUpdatedAt: string;
+  marketingOptInLevel: "SINGLE_OPT_IN";
+  marketingState: "SUBSCRIBED" | "UNSUBSCRIBED";
+};
+
 const CREATE_CUSTOMER_MUTATION = `
   mutation CustomerCreate($input: CustomerInput!) {
     customerCreate(input: $input) {
@@ -114,6 +120,8 @@ export async function createOrUpdateShopifyCustomer(lead: NormalizedLeadPayload)
     lastName: lead.lastName || undefined,
     email: lead.email || undefined,
     phone: lead.phone || undefined,
+    emailMarketingConsent: buildEmailMarketingConsent(lead),
+    smsMarketingConsent: buildSmsMarketingConsent(lead),
     tags,
     note,
   };
@@ -168,6 +176,8 @@ async function updateExistingCustomer(
       lastName: lead.lastName || undefined,
       email: lead.email || undefined,
       phone: lead.phone || undefined,
+      emailMarketingConsent: buildEmailMarketingConsent(lead),
+      smsMarketingConsent: buildSmsMarketingConsent(lead),
       tags: mergeTags(existingCustomer.tags || [], tags),
       note: appendNote(existingCustomer.note, note),
     },
@@ -217,9 +227,11 @@ export async function syncCustomerSmsPreference(event: SmsPreferenceEvent): Prom
   if (event.action === "opt_out") {
     await removeCustomerTags(customer.id, [SMS_OPT_IN_TAG]);
     await addCustomerTags(customer.id, [SMS_OPT_OUT_TAG]);
+    await updateCustomerSmsMarketingConsent(customer.id, "UNSUBSCRIBED", event.receivedAt);
   } else if (event.action === "opt_in") {
     await removeCustomerTags(customer.id, [SMS_OPT_OUT_TAG]);
     await addCustomerTags(customer.id, [SMS_OPT_IN_TAG]);
+    await updateCustomerSmsMarketingConsent(customer.id, "SUBSCRIBED", event.receivedAt);
   }
 
   await updateCustomerNote(customer.id, appendNote(customer.note, buildSmsPreferenceNote(event)));
@@ -299,6 +311,30 @@ function buildLeadNote(lead: NormalizedLeadPayload): string {
     .join("\n");
 }
 
+function buildEmailMarketingConsent(lead: NormalizedLeadPayload): CustomerMarketingConsentInput | undefined {
+  if (!lead.email || !lead.emailOptIn) {
+    return undefined;
+  }
+
+  return {
+    marketingState: "SUBSCRIBED",
+    marketingOptInLevel: "SINGLE_OPT_IN",
+    consentUpdatedAt: lead.submittedAt,
+  };
+}
+
+function buildSmsMarketingConsent(lead: NormalizedLeadPayload): CustomerMarketingConsentInput | undefined {
+  if (!lead.phone || !lead.smsOptIn) {
+    return undefined;
+  }
+
+  return {
+    marketingState: "SUBSCRIBED",
+    marketingOptInLevel: "SINGLE_OPT_IN",
+    consentUpdatedAt: lead.submittedAt,
+  };
+}
+
 function appendNote(existingNote: string | null | undefined, note: string): string {
   return existingNote ? `${existingNote}\n\n---\n${note}` : note;
 }
@@ -354,6 +390,34 @@ async function updateCustomerNote(customerId: string, note: string): Promise<voi
 
   if (!result.customerUpdate.customer?.id || errors.length > 0) {
     throw new Error(errors[0]?.message || "Shopify could not update the customer note.");
+  }
+}
+
+async function updateCustomerSmsMarketingConsent(
+  customerId: string,
+  marketingState: CustomerMarketingConsentInput["marketingState"],
+  consentUpdatedAt: string,
+): Promise<void> {
+  const result = await shopifyGraphql<{
+    customerUpdate: {
+      customer?: { id: string } | null;
+      userErrors: ShopifyUserError[];
+    };
+  }>(UPDATE_CUSTOMER_MUTATION, {
+    input: {
+      id: customerId,
+      smsMarketingConsent: {
+        marketingState,
+        marketingOptInLevel: "SINGLE_OPT_IN",
+        consentUpdatedAt,
+      },
+    },
+  });
+
+  const errors = result.customerUpdate.userErrors;
+
+  if (!result.customerUpdate.customer?.id || errors.length > 0) {
+    throw new Error(errors[0]?.message || "Shopify could not update SMS marketing consent.");
   }
 }
 

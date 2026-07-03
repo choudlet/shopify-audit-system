@@ -23,6 +23,7 @@ Lightweight Next.js landing page for Casa Crobu market lead capture. The page co
    GOOGLE_SHEETS_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
    GOOGLE_SHEETS_SMS_LOG_SPREADSHEET_ID=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
    GOOGLE_SHEETS_SMS_LOG_SHEET_NAME=Inbound SMS
+   OPERATOR_SMS_PASSWORD=choose-a-long-private-password
    DEBUG_LEAD_SUBMISSIONS=false
    ```
 
@@ -102,6 +103,21 @@ The inbound Twilio webhook can append every valid inbound SMS to a Google Sheet.
    ```
 
 `GOOGLE_SHEETS_SMS_LOG_SPREADSHEET_ID` is the long ID in the Sheet URL between `/d/` and `/edit`.
+
+## Operator SMS sender
+
+The app includes a protected operator page at `/operator/sms` for sending custom SMS messages through the Casa Crobu Twilio Messaging Service.
+
+1. Add this Vercel env var:
+
+   ```bash
+   OPERATOR_SMS_PASSWORD=choose-a-long-private-password
+   ```
+
+2. Redeploy after setting the env var.
+3. Open `/operator/sms`, enter the operator name, password, customer phone number, and message.
+
+Outbound operator messages are logged to the Google Sheet with `action` set to `outbound_custom` or `outbound_custom:{operator}`. The `from_phone` column stores the customer phone number for both inbound and outbound rows.
 
 ## Deploy to Vercel
 

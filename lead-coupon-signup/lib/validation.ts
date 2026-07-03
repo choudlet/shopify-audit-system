@@ -59,7 +59,7 @@ export function validateLeadPayload(payload: unknown): ValidationFailure | Valid
   }
 
   if (!email && !phone) {
-    errors.contact = "Enter an email address or mobile number so we can connect MARKET5 to your signup.";
+    errors.contact = "Enter an email address or mobile number so we can connect your offer to your signup.";
   }
 
   if (email && !emailPattern.test(email)) {
@@ -83,7 +83,7 @@ export function validateLeadPayload(payload: unknown): ValidationFailure | Valid
   }
 
   if (!emailOptIn && !smsOptIn) {
-    errors.channel = "Choose email or text so we can connect MARKET5 to your signup.";
+    errors.channel = "Choose email or text so we can connect your offer to your signup.";
   }
 
   if (Object.keys(errors).length > 0) {
@@ -137,7 +137,7 @@ function isBlockedEmail(email: string): boolean {
   return /^(test|fake|none|noemail|asdf|qwerty|abc|sample)(\+.*)?$/i.test(localPart);
 }
 
-function normalizePhone(value: unknown): string {
+export function normalizePhone(value: unknown): string {
   if (typeof value !== "string") {
     return "";
   }

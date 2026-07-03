@@ -109,7 +109,7 @@ function LeadSignupPage() {
 
       {isEmbed ? null : (
         <header className={styles.header}>
-          <a className={styles.brand} href="https://casacrobu.com" aria-label="Casa Crobu home">
+          <a className={styles.brand} href="https://casacrobu.com/" aria-label="Casa Crobu home">
             <img
               className={styles.logoImage}
               src="https://casacrobu.com/cdn/shop/files/websitelogotransparent_e3945784-8899-4a2b-9751-c1b9ea06206a_360x.gif?v=1614774856"
@@ -117,7 +117,7 @@ function LeadSignupPage() {
             />
             <span>Casa Crobu</span>
           </a>
-          <a className={styles.siteLink} href="https://casacrobu.com">
+          <a className={styles.siteLink} href="https://casacrobu.com/">
             Return to Casa Crobu
           </a>
         </header>
@@ -136,8 +136,8 @@ function LeadSignupPage() {
             Crobu all summer - at the market or delivered to your door.
           </p>
           <p className={`${styles.intro} ${styles.introFollow}`}>
-            Use <strong>MARKET5 for $5 off your next lasagna or market order of $29 or more</strong>.
-            At the booth, give the phone number you used to sign up so we can apply it for you.
+            Sign up for <strong>$5 off your next lasagna or market order of $29 or more</strong>.
+            At the booth, give the phone number you used to sign up so we can apply your offer.
           </p>
           <ul className={styles.benefits}>
             <li>
@@ -150,7 +150,7 @@ function LeadSignupPage() {
               <span aria-hidden="true">⌂</span> Easy ways to enjoy Casa Crobu at home
             </li>
             <li>
-              <span aria-hidden="true">✓</span> MARKET5 applied at the booth with your phone number
+              <span aria-hidden="true">✓</span> Your welcome offer applied at the booth with your phone number
             </li>
           </ul>
         </div>
@@ -161,10 +161,10 @@ function LeadSignupPage() {
               <p className={styles.kicker}>You are in the Market Club</p>
               <h2>Grazie, {firstName}.</h2>
               <p>
-                We received your signup. Use MARKET5 online, or give the phone number you used to
-                sign up at the booth so we can apply it for you.
+                We received your signup. Check your text or email for your offer, or give the phone
+                number you used to sign up at the booth so we can apply it for you.
               </p>
-              <a className={styles.secondaryButton} href="https://casacrobu.com">
+              <a className={styles.secondaryButton} href="https://casacrobu.com/">
                 Return to Casa Crobu
               </a>
             </div>
@@ -182,10 +182,10 @@ function LeadSignupPage() {
 
               <div className={styles.formHeading}>
                 <p className={styles.kicker}>Market Club</p>
-                <h2>Claim MARKET5 for $5 off</h2>
+                <h2>Claim your $5 welcome offer</h2>
                 <p>
-                  Sign up and use MARKET5 online, or give your signup phone number at the booth so
-                  we can apply it for you.
+                  Sign up and we will send your offer details, plus occasional market updates,
+                  seasonal specials, and ways to order Casa Crobu at home.
                 </p>
               </div>
 
@@ -222,8 +222,8 @@ function LeadSignupPage() {
               </div>
 
               <p className={styles.fieldHint}>
-                Share your email, mobile number, or both so we can connect MARKET5 to your Market
-                Club signup.
+                Share your email, mobile number, or both so we can connect your welcome offer to
+                your Market Club signup.
               </p>
 
               <label>
@@ -283,8 +283,8 @@ function LeadSignupPage() {
                   />
                   <span className={styles.checkBox} aria-hidden="true" />
                   <span>
-                    Email me MARKET5, weekly market locations, seasonal specials, and occasional
-                    ways to order Casa Crobu at home.
+                    Email me my welcome offer, weekly market locations, seasonal specials, and
+                    occasional ways to order Casa Crobu at home.
                   </span>
                 </label>
                 <label>
@@ -295,9 +295,9 @@ function LeadSignupPage() {
                   />
                   <span className={styles.checkBox} aria-hidden="true" />
                   <span>
-                    Also text me MARKET5, market updates, seasonal specials, and occasional Casa
-                    Crobu ordering updates. I agree to receive recurring automated marketing texts
-                    from Casa Crobu. Consent is not required to purchase. Msg & data rates may
+                    Also text me my welcome offer, market updates, seasonal specials, and occasional
+                    Casa Crobu ordering updates. I agree to receive recurring automated marketing
+                    texts from Casa Crobu. Consent is not required to purchase. Msg & data rates may
                     apply. Reply STOP to unsubscribe and HELP for help.
                   </span>
                 </label>
@@ -308,7 +308,7 @@ function LeadSignupPage() {
               {submitError ? <p className={styles.submitError}>{submitError}</p> : null}
 
               <button className={styles.submitButton} type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Sending..." : "Get MARKET5"}
+                {isSubmitting ? "Sending..." : "Get My Offer"}
               </button>
 
               <p className={styles.finePrint}>
@@ -325,7 +325,7 @@ function LeadSignupPage() {
       {isEmbed ? null : (
         <footer className={styles.footer}>
           © 2026 Casa Crobu · Authentic Italian, home delivered ·{" "}
-          <a href="https://casacrobu.com">casacrobu.com</a>
+          <a href="https://casacrobu.com/">casacrobu.com</a>
         </footer>
       )}
     </main>
