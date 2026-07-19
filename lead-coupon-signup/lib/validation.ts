@@ -1,3 +1,5 @@
+import { isMarketLocation } from "@/lib/market-locations";
+
 export type LeadPayload = {
   firstName: string;
   lastName?: string;
@@ -41,6 +43,7 @@ export function validateLeadPayload(payload: unknown): ValidationFailure | Valid
   const phone = normalizePhone(input.phone);
   const market = cleanText(input.market);
   const location = cleanText(input.location);
+  const submittedLocation = location || market;
   const source = cleanText(input.source);
   const channel = cleanText(input.channel);
   const campaign = cleanText(input.campaign);
@@ -86,6 +89,12 @@ export function validateLeadPayload(payload: unknown): ValidationFailure | Valid
     errors.channel = "Choose email or text so we can connect your offer to your signup.";
   }
 
+  if (location && market && location !== market) {
+    errors.location = "Select a valid market or location.";
+  } else if (!submittedLocation || !isMarketLocation(submittedLocation)) {
+    errors.location = "Select a valid market or location.";
+  }
+
   if (Object.keys(errors).length > 0) {
     return { ok: false, errors };
   }
@@ -97,8 +106,8 @@ export function validateLeadPayload(payload: unknown): ValidationFailure | Valid
       lastName,
       email,
       phone,
-      market,
-      location,
+      market: submittedLocation,
+      location: submittedLocation,
       source,
       channel,
       campaign,

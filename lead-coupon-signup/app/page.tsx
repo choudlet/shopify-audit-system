@@ -3,6 +3,7 @@
 import { FormEvent, Suspense, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import styles from "./page.module.css";
+import { isMarketLocation, MARKET_LOCATIONS } from "@/lib/market-locations";
 import { validateLeadPayload, type LeadPayload } from "@/lib/validation";
 
 type FieldErrors = Partial<Record<keyof LeadPayload | "contact" | "channel", string>>;
@@ -18,25 +19,6 @@ const initialForm: LeadPayload = {
   emailOptIn: false,
 };
 
-const marketLocationOptions = [
-  "Belleview Station DTC",
-  "Boulder Farmers Market",
-  "Central Park",
-  "City Park",
-  "Festival Park",
-  "Gluten Free Market",
-  "Golden",
-  "Harvey Park",
-  "Highlands",
-  "Lafayette",
-  "Longmont Farmer's Market",
-  "Louisville",
-  "Parker",
-  "South Pearl Street Market",
-  "Thornton",
-  "Westminster",
-];
-
 export default function Home() {
   return (
     <Suspense>
@@ -49,7 +31,8 @@ function LeadSignupPage() {
   const searchParams = useSearchParams();
   const isEmbed = searchParams.get("embed") === "1" || searchParams.get("embed") === "true";
   const urlLocation = searchParams.get("location") || searchParams.get("market") || "";
-  const shouldShowLocationSelect = !urlLocation;
+  const isKnownUrlLocation = isMarketLocation(urlLocation);
+  const shouldShowLocationSelect = !isKnownUrlLocation;
   const outboundLinkTarget = isEmbed ? "_top" : undefined;
   const [form, setForm] = useState<LeadPayload>(initialForm);
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -69,8 +52,8 @@ function LeadSignupPage() {
     event.preventDefault();
     const result = validateLeadPayload({
       ...form,
-      market: urlLocation || form.location || "",
-      location: urlLocation || form.location || "",
+      market: isKnownUrlLocation ? urlLocation : form.location || "",
+      location: isKnownUrlLocation ? urlLocation : form.location || "",
       source: searchParams.get("source") || "",
       channel: searchParams.get("channel") || searchParams.get("source") || "",
       campaign: searchParams.get("campaign") || "",
@@ -264,14 +247,17 @@ function LeadSignupPage() {
                     name="location"
                     value={form.location || ""}
                     onChange={(event) => updateField("location", event.target.value)}
+                    required
+                    aria-invalid={Boolean(errors.location)}
                   >
                     <option value="">Select a market or location</option>
-                    {marketLocationOptions.map((location) => (
+                    {MARKET_LOCATIONS.map((location) => (
                       <option key={location} value={location}>
                         {location}
                       </option>
                     ))}
                   </select>
+                  {errors.location ? <small>{errors.location}</small> : null}
                 </label>
               ) : null}
 
