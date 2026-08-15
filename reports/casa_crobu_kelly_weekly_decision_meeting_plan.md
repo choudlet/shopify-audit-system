@@ -11,13 +11,13 @@ This section is the live source of truth while preparing for the meeting. Conden
 | # | Decision / Direction | Status | Remaining Question |
 |---|---|---|---|
 | 1 | Use a two-stage offer strategy. The initial market-capture offer should reward a return market visit; later in the summer, introduce a percentage-off first delivery order to convert engaged market subscribers into delivery customers. | Proposed recommendation for Kelly approval | Approve offer economics and timing for the later delivery offer. |
-| 2 | Initial offer: **5% off the subscriber's next market purchase of `$20` or more**. In Shopify, use **Amount off order** rather than a product-specific, Buy X Get Y, or shipping discount. | Working decision | Set expiration window and confirm final POS redemption behavior. |
+| 2 | Initial offer: **$5 off the subscriber's next lasagna or market purchase of `$29` or more**. In Shopify, use **Amount off order** rather than a product-specific, Buy X Get Y, or shipping discount. | Confirmed live offer | Maintain the current redemption behavior. |
 | 3 | The first offer's strategic job is retention and habit-building: invest in the customer relationship now, then push delivery conversion later. | Proposed recommendation for Kelly approval | Define the signal or date that triggers the delivery-conversion phase. |
 | 4 | Confirmed: none of Casa Crobu's POS locations use POS Pro. On Basic + POS Lite, Retail Markets cannot apply different market settings to POS locations versus the online store in the same region. | Confirmed plan constraint | Use staff-controlled POS redemption, allow online code use, or consider a future POS Pro upgrade. |
 | 5 | Confirmed attribution workflow: at the subscriber's next market visit, staff attaches the customer to the Shopify POS order before applying the discount. This connects the return purchase to the subscriber. | Confirmed workflow; recommend for pilot | Decide whether staff can do it consistently during busy market periods. |
 | 6 | Use one shared, memorable pilot code and QR for the initial test rather than generating unique codes for every subscriber. | Proposed recommendation for Kelly approval | Accept limited code-sharing risk, or approve the added complexity of unique codes. |
 | 7 | For Phase 1, skip Shopify Campaigns and UTM parameters. Point each market QR directly to its market-specific Shopify page and use form-applied customer tags as the source of truth. | Working recommendation | Revisit one umbrella campaign later only if QR visits and session-level attribution become important. |
-| 8 | `DEMO_MARKET_WELCOME` is configured as 5% off a minimum `$20` purchase, one use per customer, no combinations, and currently active for Online Store. | Confirmed demo configuration | Test it in Shopify POS and decide whether online redemption is acceptable. |
+| 8 | `MARKET5` is configured as $5 off a minimum `$29` purchase, one use per customer, no combinations, and live. | Confirmed live configuration | Review redemption in Shopify reporting. |
 | 9 | Keep one canonical product catalog. Do not duplicate every product into separate online and market listings merely to enforce the discount. | Working decision | Use a staff-controlled POS workflow on the current plan. |
 | 10 | A test Shopify Campaign exists, but it is not required for the recommended Phase 1 setup. Market-specific pages and form tags provide the needed customer-level attribution with less configuration. | Working decision | Keep the test campaign for reference; do not build separate campaigns for each market. |
 | 11 | Reject Shopify POS Pro for Phase 1. At `$89 per location per month`, upgrading multiple farmers-market locations is not justified merely to automate the market-only discount rule. | Working decision | Revisit only if later operational needs create substantially more value than discount automation alone. |
@@ -74,13 +74,13 @@ Do not install multiple SMS apps during discovery. Each can introduce separate c
 
 | Screenshot | What It Shows | Use In Meeting |
 |---|---|---|
-| Shopify "Select discount type" screen | Available discount structures: Amount off products, Buy X Get Y, Amount off order, Free shipping, and installed-app discount types. | Use when asking Kelly to approve **Amount off order** for the initial `5% off $20+ next market purchase` offer. |
-| Shopify `DEMO_MARKET_WELCOME` summary | Confirmed demo configuration: 5% off entire order, `$20` minimum, one-time purchase, one use per customer, no combinations, all customers, Active, and shown as Online Store. | Use to show the actual offer configuration and ask whether online redemption is acceptable. |
-| Lovable desktop market-list landing page | Polished desktop design candidate with Casa Crobu branding, offer-led hero, benefits, and a prominent email/SMS form. | Keep as a potential visual direction for the Shopify landing page. Its `5% off $20+` offer copy is aligned with the working offer decision. |
+| Shopify "Select discount type" screen | Available discount structures: Amount off products, Buy X Get Y, Amount off order, Free shipping, and installed-app discount types. | Reference for the live **Amount off order** `MARKET5` offer. |
+| Shopify `MARKET5` summary | Live configuration: $5 off entire order, `$29` minimum, one-time purchase, one use per customer, no combinations, and Active. | Use to confirm the offer configuration. |
+| Lovable desktop market-list landing page | Polished desktop design candidate with Casa Crobu branding, offer-led hero, benefits, and a prominent email/SMS form. | Do not reuse until its offer copy is updated to the live `$5 off $29+` terms. |
 | Shopify POS cart before customer attachment | Cart contains two Classic Lasagna Bolognese items totaling `$58`; **Add customer** is visible. | Begin the redemption walkthrough and emphasize that staff attaches the customer before applying the offer. |
 | Shopify POS customer search | Staff can search by customer email, phone number, name, or address. | Show that booth staff can quickly find an existing Market Club subscriber. |
 | Shopify POS cart with attached customer and Apply discount menu | Test customer is attached and shown as accepting marketing; **Apply discount** is available from the cart menu. | Demonstrate the required order of operations: identify the subscriber, attach them, then apply the offer. |
-| Shopify POS cart after discount | `DEMO_WELCOME_MARKET` successfully applies a `$2.90` order discount to the `$58` cart, reducing checkout from `$63.33` to `$60.18` after recalculated tax. | Confirm that the 5% discount works in POS and remains connected to the attached customer. |
+| Shopify POS cart after discount | `MARKET5` applies a `$5` order discount after the cart meets the `$29` minimum. | Confirm that the live offer works in POS and remains connected to the attached customer. |
 
 ## The Decision To Get
 
@@ -108,7 +108,7 @@ Recommend postponing the **$750 Member Lookup + POS Attribution Add-On** until t
 
 Recommend a two-stage offer strategy:
 
-1. **Initial retention offer:** `5% off the next market purchase of $20 or more` to reward signup, encourage another visit, and build the market-list habit.
+1. **Initial retention offer:** `$5 off the next lasagna or market purchase of $29 or more` to reward signup, encourage another visit, and build the market-list habit.
 2. **Later delivery-conversion offer:** A percentage off the subscriber's first delivery order after the list has been activated and Casa Crobu is ready to shift demand toward fall delivery.
 
 Recommend this Shopify Basic + POS Lite redemption workflow:
@@ -117,12 +117,12 @@ Recommend this Shopify Basic + POS Lite redemption workflow:
 2. The welcome message tells the subscriber to show the offer at the booth.
 3. On the subscriber's next market visit, staff attaches the customer to the Shopify POS order using email or phone lookup.
 4. Staff verifies that the customer belongs to the market-list segment and has not already redeemed the offer.
-5. Staff applies a `5%` custom order discount in Shopify POS after the cart reaches `$20`.
+5. Staff applies the `MARKET5` offer after the cart reaches `$29`.
 6. The completed order is connected to the customer for attribution.
 
 The customer-attachment step is the key attribution moment. Without it, Shopify can report that the discount was redeemed. With it, Casa Crobu can also see which market-list customer returned, what they purchased, and whether that customer later converts to delivery.
 
-This workflow has now been tested in Shopify POS using an attached test customer. The code displayed in the successful POS test is `DEMO_WELCOME_MARKET`; standardize the final demo and production code name before launch so all forms, messages, QR codes, and staff instructions use the same value.
+This workflow has now been tested in Shopify POS using an attached test customer. The production code is `MARKET5`; archive or replace any old screenshots that show `DEMO_WELCOME_MARKET` before using them in a current handoff.
 
 Do not create duplicate "market" versions of the product catalog to enforce the offer. That would split inventory, product reporting, purchase history, and ongoing catalog maintenance. Preserve one product record per product and use the staff-controlled POS workflow.
 
@@ -132,10 +132,10 @@ Casa Crobu is on Shopify Basic with POS Lite at its locations. Do not add POS Pr
 
 Use the tested staff-controlled workflow:
 
-1. Staff builds the cart and confirms it meets the `$20` minimum.
+1. Staff builds the cart and confirms it meets the `$29` minimum.
 2. Staff searches for and attaches the Market Club customer.
 3. Staff verifies the customer has `market_club` and has not already redeemed the offer.
-4. Staff applies the shared discount code or a custom 5% order discount.
+4. Staff applies the shared `MARKET5` discount code or a custom $5 order discount.
 5. Staff confirms the discount and attached customer remain visible before checkout.
 
 The standard code has been confirmed to apply in Shopify POS. The remaining policy decision is whether Casa Crobu accepts that the shared code can also be used online. If not, staff should apply a custom POS discount instead of distributing the code.
@@ -148,7 +148,7 @@ Use market-specific pages, Forms, tags, and Discounts together:
 |---|---|---|
 | Market-specific Shopify page / QR | Send shoppers to the correct signup form | `/pages/welcome-market-arvada`, `/pages/welcome-market-boulder`, `/pages/welcome-market-city-park` |
 | Shopify customer tags | Create the full market-club audience and preserve the signup market on the customer record | `market_club`, `city_park_market_club` |
-| Shopify discount | Reward and measure the return purchase | `DEMO_MARKET_WELCOME` |
+| Shopify discount | Reward and measure the return purchase | `MARKET5` |
 | Attached Shopify POS customer | Connect discount redemption and order behavior to the subscriber | Customer email/phone lookup before redemption |
 
 Do not use the discount QR as the initial acquisition QR. Each market's acquisition QR should open its dedicated signup page. After signup, the customer receives the separate return-offer discount QR.
@@ -157,9 +157,9 @@ Use hyphenated Shopify page handles for readability. The page/form determines th
 
 Shopify Forms can natively display a selected discount **code** in its standard success message, but it does not natively display the discount's QR image there. For the pilot, configure the form's success behavior to redirect to a Shopify-hosted thank-you page containing:
 
-* the downloaded `DEMO_MARKET_WELCOME` discount QR,
+* the downloaded `MARKET5` discount QR,
 * the text code as a fallback,
-* the `5% off a market purchase of $20 or more` terms,
+* the `$5 off a market purchase of $29 or more` terms,
 * and a reminder that staff will attach the customer before scanning.
 
 The thank-you-page URL and shared QR can be forwarded, so this is a convenient redemption workflow rather than secure per-customer gating. The one-use-per-customer setting and attached-customer workflow provide the pilot controls.
@@ -278,8 +278,8 @@ Demo one consistent scenario across both platforms:
 
 Show the offer configuration before comparing messaging providers. This establishes Shopify as the source of truth for discount rules and redemption.
 
-1. Select **Amount off order** and create a static pilot discount code in Shopify, such as `DEMO_MARKET_WELCOME`.
-2. Configure the initial offer as `5% off the subscriber's next market purchase of `$20` or more`.
+1. Select **Amount off order** and create the static `MARKET5` discount code in Shopify.
+2. Configure the initial offer as `$5 off the subscriber's next market purchase of `$29` or more`.
 3. Show the business rules Kelly must approve: minimum purchase, eligible products or collections, start/end dates, total usage limit, one-use-per-customer rule, and combinations.
 4. Explain the Shopify constraint: discount codes cannot be restricted to POS only. Decide whether the offer uses market-only eligible products, a staff redemption process, or can also be redeemed online.
 5. Walk through the confirmed POS screenshots: add customer, search and attach the subscriber, open **Apply discount**, then show the successfully discounted cart.
@@ -296,7 +296,7 @@ For the initial pilot, recommend a **static Shopify code** because it is easy fo
 | Option | Booth Steps | Strength | Tradeoff |
 |---|---|---|---|
 | Recommended for easiest pilot: shared code + customer lookup | Staff attaches customer, then scans/enters code | Confirmed working in POS; retains one-use rules and attributes the order | Shared code can also be used online and forwarded |
-| Strict market-only: staff-controlled custom discount | Staff attaches customer, verifies eligibility, then manually applies `5%` when cart reaches `$20` | Prevents customers from using a distributed code online | Manual staff step; eligibility/use limit must be operationally tracked |
+| Strict market-only: staff-controlled custom discount | Staff attaches customer, verifies eligibility, then manually applies `$5` when cart reaches `$29` | Prevents customers from using a distributed code online | Manual staff step; eligibility/use limit must be operationally tracked |
 | Segment-restricted standard code | Code eligibility is the market-list customer segment | Restricts use to captured customers | Does not by itself prevent online redemption |
 
 The current sample code has been tested successfully in Shopify POS with an attached customer. Before launch, standardize its name and decide whether online use is acceptable.
@@ -396,7 +396,7 @@ Capture these decisions live:
 | SMS at launch | Optional; include only with an owner and approved compliance setup | |
 | SMS legal pages | Kelly provides/approves Terms of Service and Privacy Policy; implementation wires links into Shopify legal settings and form disclaimer | |
 | Pilot markets | Choose 2-3 markets | |
-| First offer | `5% off the subscriber's next market purchase of `$20` or more` | |
+| First offer | `$5 off the subscriber's next lasagna or market purchase of `$29` or more` | |
 | Later conversion offer | Percentage off the subscriber's first delivery order | |
 | Coupon rules | Amount off order; define minimum purchase, products, dates, usage limit, and combinations | |
 | Market-redemption handling | Shared code if online use is acceptable; staff-controlled custom POS discount if it must be market-only | |
@@ -421,7 +421,7 @@ Capture these decisions live:
 * Who will provide or approve Casa Crobu's Terms of Service and Privacy Policy required for SMS consent?
 * Would Casa Crobu actively run Instagram comment/DM signup campaigns, or would a link to the landing page be enough?
 * Which 2-3 markets give us the best combination of volume, staff consistency, and permission to use signage or stickers?
-* Is `5% off the next market purchase of $20 or more` safe for margin?
+* Is the live `$5 off the next market purchase of $29 or more` offer still safe for margin?
 * Because Shopify cannot restrict a discount code to POS only, should we use market-only eligible products, a staff redemption process, or allow online redemption too?
 * Should the coupon be reusable, limited to one use per customer, or replaced with unique Klaviyo codes?
 * Can booth staff consistently look up the customer by email or phone before scanning the QR code?

@@ -59,11 +59,11 @@ Create a customer segment for customers tagged market_club who are subscribed to
 ```
 
 ```text
-Create an amount-off-order discount named DEMO_MARKET_WELCOME for 5% off purchases of $20 or more. Make it one use per customer and do not combine it with other discounts. Show me the configuration before applying it.
+Create an amount-off-order discount named MARKET5 for $5 off purchases of $29 or more. Make it one use per customer and do not combine it with other discounts. Show me the configuration before applying it.
 ```
 
 ```text
-Help me draft a welcome email for new market-list subscribers. Explain that they can show the message at their next market visit for 5% off a purchase of $20 or more.
+Help me draft a welcome email for new market-list subscribers. Explain that they can show the message at their next market visit for $5 off a purchase of $29 or more.
 ```
 
 ```text
@@ -149,11 +149,11 @@ Create a safe proposed discount in Shopify:
 
 | Setting | Demo Value |
 |---|---|
-| Code | `DEMO_MARKET_WELCOME` |
+| Code | `MARKET5` |
 | Type | Amount off order |
-| Value | `5% off` |
+| Value | `$5 off` |
 | Strategic purpose | Reward the subscriber's next market visit and build loyalty before introducing a later delivery-conversion offer |
-| Minimum purchase | `$20` |
+| Minimum purchase | `$29` |
 | Intended use | Next market purchase |
 | Customer eligibility | All customers for demo |
 | Usage | Maximum 10 uses; limit one use per customer |
@@ -169,11 +169,11 @@ Capture screenshots of:
 * where Shopify reports discount redemption,
 * and the customer-facing code.
 
-Present `5% off the next market purchase of $20 or more` as the initial offer. Ask Kelly to approve the expiration and final redemption handling. Explain that the later delivery-conversion offer would be a percentage off the subscriber's first delivery order.
+Present `$5 off the next market purchase of $29 or more` as the initial offer. Ask Kelly to approve the expiration and final redemption handling. Explain that the later delivery-conversion offer would be a percentage off the subscriber's first delivery order.
 
 Generate an easily redeemable shared code:
 
-1. Use the memorable code `DEMO_MARKET_WELCOME`.
+1. Use the live code `MARKET5`.
 2. In Shopify Discounts, use **Promote > Get a shareable discount code**.
 3. Use **Download QR code** to generate the customer-facing QR.
 4. Upload the QR image to Shopify and place it on a Shopify-hosted thank-you page with the text code and offer terms.
@@ -192,7 +192,7 @@ Deliver the same offer after signup:
 **Shopify email**
 
 1. Add the downloaded QR image to the welcome email.
-2. Include the text code `DEMO_MARKET_WELCOME` and the offer terms beneath it.
+2. Include the text code `MARKET5` and the offer terms beneath it.
 3. Add a **View your market offer** button linking to the Shopify-hosted thank-you page.
 4. Send a test email and confirm the QR remains readable on mobile with images enabled.
 
@@ -200,7 +200,7 @@ Deliver the same offer after signup:
 
 1. Send a short link to the Shopify-hosted thank-you page rather than trying to embed the QR image.
 2. Use Shopify Messaging's link-shortening option when available.
-3. Include concise terms in the message, such as `5% off $20+ at your next market visit`.
+3. Include concise terms in the message, such as `$5 off $29+ at your next market visit`.
 4. Test that the link opens the QR page and that the POS device can scan the displayed QR.
 
 **Klaviyo option**
@@ -209,7 +209,7 @@ Klaviyo can send the QR image directly as MMS in supported countries, including 
 
 Recommended staff script:
 
-> Welcome back. Can I look you up by the email or phone number you used to join? Great, now show me your market-list QR code and I will apply your `5% off` return offer.
+> Welcome back. Can I look you up by the email or phone number you used to join? Great, now show me your market-list QR code and I will apply your `$5 off` return offer.
 
 Confirmed POS walkthrough for tomorrow:
 
@@ -218,16 +218,16 @@ Confirmed POS walkthrough for tomorrow:
 3. Attach the subscriber and confirm the customer appears on the cart.
 4. Tap the three-dot cart menu, then **Apply discount**.
 5. Apply the code and show the final cart with the customer still attached.
-6. Point out the successful `$2.90` discount on the `$58` subtotal and the recalculated checkout total.
+6. Point out the successful `$5` discount after the cart meets the `$29` minimum.
 
-The successful test screenshot displays the discount code as `DEMO_WELCOME_MARKET`. Standardize this against any remaining `DEMO_MARKET_WELCOME` references before building the final QR, form success page, or welcome messages.
+The live customer-facing code is `MARKET5`. Update or retire any old demo screenshots before using them in a client handoff.
 
 If the offer must be strictly market-only, do not distribute the shared code. Use this workflow instead:
 
 1. Customer shows the welcome message at the booth.
 2. Staff attaches the customer to the Shopify POS order.
 3. Staff verifies the offer has not already been redeemed.
-4. Once the cart reaches `$20`, staff uses **Apply discount > Apply custom order discount > Percentage > `5%`**.
+4. Once the cart reaches `$29`, staff uses **Apply discount > Apply custom order discount > Amount > `$5`**.
 5. Staff completes the order with the customer attached.
 
 Staff must have the Shopify POS **Apply custom discounts** permission.
@@ -246,10 +246,13 @@ Demo narration:
 
 Create an inline Shopify Form and landing page.
 
-**Internal name:** `DEMO - Market List Signup`  
-**Landing page handle:** `/pages/demo-market-list`  
-**Customer tag:** `demo_market_list`  
-**Optional source tag:** `demo_source_market`
+**Internal name:** `Market Club Signup`
+
+**Landing page handle:** `/pages/market-club`
+
+**Customer tag:** `market_club`
+
+**Optional source tag:** `source_location_{market}`
 
 Suggested form copy:
 
@@ -258,7 +261,7 @@ Suggested form copy:
 **Fields:** First name, email required, phone optional  
 **Button:** Join the Market List  
 **Success behavior:** Redirect to the Shopify-hosted market-offer thank-you page  
-**Thank-you page:** Show the `DEMO_MARKET_WELCOME` QR, text code, and `5%` off a market purchase of `$20` or more terms.
+**Thank-you page:** Show the `MARKET5` QR, text code, and `$5` off a market purchase of `$29` or more terms.
 
 Configure:
 
@@ -274,7 +277,7 @@ Then create a draft Shopify Messaging automation:
 **Template:** Welcome new subscribers with a discount email  
 **Subject:** Welcome to the Casa Crobu market list  
 **CTA:** View your market offer  
-**Code:** `DEMO_MARKET_WELCOME`
+**Code:** `MARKET5`
 
 Test the journey with your email:
 
@@ -300,7 +303,7 @@ Create:
 **Flow:** `DEMO - Market Welcome - MANUAL`  
 **Segment:** `DEMO - Market Subscribers`
 
-Configure the signup form with the same shopper-facing copy and same Shopify static code, `DEMO_MARKET_WELCOME`.
+Configure the signup form with the same shopper-facing copy and live Shopify code, `MARKET5`.
 
 Show in the draft flow:
 
@@ -446,7 +449,7 @@ The first four are enough to hold the decision meeting.
 
 ### Do Now
 
-* Standardize the discount code name everywhere. The confirmed POS screenshot shows `DEMO_WELCOME_MARKET`.
+* Archive or replace old POS screenshots that show `DEMO_WELCOME_MARKET`; the live code is `MARKET5`.
 * Build one representative Shopify Form with `market_club` and one location-specific tag.
 * Submit the form and verify the customer record, both tags, and email/SMS consent statuses.
 * Build the Shopify-hosted offer page with the discount QR, text code, and terms; configure the form redirect.
@@ -466,7 +469,7 @@ The first four are enough to hold the decision meeting.
 
 * Approve Shopify-first or Klaviyo and set the maximum monthly software budget.
 * Choose the 2-3 pilot markets.
-* Approve the 5% off `$20+` offer, expiration, and online-redemption policy.
+* Approve the $5 off `$29+` offer, expiration, and online-redemption policy.
 * Decide whether SMS is included at launch.
 * Choose a sustainable summer message cadence and identify which message types subscribers will receive.
 * Name the person responsible for supplying and approving recurring content.

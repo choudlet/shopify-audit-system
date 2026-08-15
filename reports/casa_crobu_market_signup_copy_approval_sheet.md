@@ -53,7 +53,7 @@ Core tags:
 
 ```text
 market_club
-welcome_offer_5_off_20
+welcome_offer_5_off
 casa_crobu
 source_custom_landing_page
 ```
@@ -83,7 +83,7 @@ Those opt-in tags are only added when the customer gives that contact method and
 
 We will use Twilio for SMS.
 
-The form is already set up to send the welcome SMS through Twilio after a customer joins, but production SMS sending should wait until Twilio finishes approving the toll-free number.
+The live form sends the welcome SMS through Twilio after an SMS-opted-in customer joins.
 
 ### Email
 
@@ -96,13 +96,13 @@ The open question is how the first welcome email should be sent. My recommendati
 The recommended redemption flow is simple:
 
 1. Customer joins the Market Club.
-2. Customer receives the welcome code by SMS and/or email.
-3. Customer shows the text or email at the booth.
+2. Customer receives the welcome code by SMS when they opt in.
+3. Customer shows the text at the booth.
 4. Staff applies the welcome offer at checkout.
 
 Staff instruction:
 
-> If a customer shows MARKET5 from the Market Club text or email, apply 5% off one market order of $20 or more.
+> If a customer shows MARKET5 from the Market Club text, apply $5 off their next lasagna or market order of $29 or more.
 
 ---
 
@@ -232,7 +232,7 @@ Use these for product stickers, packaging, lid stickers, bag inserts, or take-ho
 ### Top Bar
 
 ```text
-Catch us at the market - 5% off your next $20+ order
+Catch us at the market - $5 off your next $29+ order
 ```
 
 ### Offer Badge
@@ -244,13 +244,13 @@ Market Club - welcome offer
 ### Headline
 
 ```text
-Join the Market Club. Get 5% off.
+Join the Market Club. Get $5 off.
 ```
 
 ### Supporting Copy
 
 ```text
-Join the Casa Crobu Market Club for weekly market stops, seasonal specials, preorder reminders, and 5% off your next market order of $20 or more. From lasagna and eggplant parmigiana to Sardinian favorites, we will help you find what is fresh, ready, and waiting at the booth.
+Join the Casa Crobu Market Club for weekly market stops, seasonal specials, preorder reminders, and $5 off your next lasagna or market order of $29 or more. From lasagna and eggplant parmigiana to Sardinian favorites, we will help you find what is fresh, ready, and waiting at the booth.
 ```
 
 ### Benefits
@@ -258,13 +258,13 @@ Join the Casa Crobu Market Club for weekly market stops, seasonal specials, preo
 ```text
 Weekly market stops and booth updates
 Seasonal specials and preorder reminders
-Your 5% off code by email or text
+Your $5 off code by text
 ```
 
 ### Form Heading
 
 ```text
-Claim your 5% off
+Claim your $5 off
 ```
 
 ### Form Helper Text
@@ -282,7 +282,7 @@ Join the Market Club
 ### Fine Print
 
 ```text
-Offer valid on one market order of $20 or more. One use per customer. Casa Crobu will not sell or share your information.
+Offer valid on one lasagna or one market order of $29 or more. One use per customer. Casa Crobu will not sell or share your information.
 ```
 
 ### Success Message
@@ -302,13 +302,13 @@ We received your signup and will send the code to the contact info you provided.
 ### SMS Checkbox
 
 ```text
-Text me my 5% off code and occasional Casa Crobu market updates. By checking this box, I agree to receive recurring automated marketing text messages from Casa Crobu. Consent is not a condition of purchase. Msg & data rates may apply. Reply STOP to unsubscribe and HELP for help.
+Text me my $5 off code and occasional Casa Crobu market updates. By checking this box, I agree to receive recurring automated marketing text messages from Casa Crobu. Consent is not a condition of purchase. Msg & data rates may apply. Reply STOP to unsubscribe and HELP for help.
 ```
 
 ### Email Checkbox
 
 ```text
-Email me my 5% off code, weekly market locations, and occasional Casa Crobu updates.
+Email me weekly market locations and occasional Casa Crobu updates.
 ```
 
 ### Privacy And Terms Note
@@ -334,7 +334,7 @@ Consent is not a condition of purchase. Message frequency may vary. Message and 
 ### SMS Welcome Message
 
 ```text
-Grazie from Casa Crobu. Use code MARKET5 for 5% off your next market order of $20 or more. Show this text at the booth. Reply STOP to opt out.
+Benvenuto to the Casa Crobu Market Club. Use code MARKET5 for $5 off your next lasagna or purchase of $29 or more. To redeem at the booth, give the phone number you used to sign up. Reply STOP to opt out.
 ```
 
 ### Email Subject
@@ -348,7 +348,7 @@ Your Casa Crobu market code
 Alternatives:
 
 ```text
-Grazie - here is your 5% off code
+Grazie - here is your $5 off code
 You are in the Casa Crobu Market Club
 ```
 
@@ -357,7 +357,7 @@ You are in the Casa Crobu Market Club
 ```text
 Hi [firstName],
 
-Grazie for joining the Casa Crobu Market Club. Use code MARKET5 for 5% off your next market order of $20 or more.
+Grazie for joining the Casa Crobu Market Club. Use code MARKET5 for $5 off your next lasagna or market order of $29 or more.
 
 We will send occasional market locations, seasonal specials, and preorder notes so you know where to find us next.
 
@@ -373,7 +373,7 @@ Recommended launch offer:
 
 ```text
 MARKET5
-5% off one market order of $20 or more
+$5 off one lasagna or one market order of $29 or more
 One use per customer
 ```
 
@@ -396,7 +396,7 @@ Open question:
 ```text
 Join the Casa Crobu Market Club
 
-Get 5% off your next $20+ market order.
+Get $5 off your next $29+ market order.
 
 Scan to get your code.
 ```
@@ -406,13 +406,13 @@ Scan to get your code.
 ```text
 Want the weekly market menu?
 
-Join the Casa Crobu Market Club and get 5% off your next market order.
+Join the Casa Crobu Market Club and get $5 off your next market order of $29 or more.
 ```
 
 ### Staff Prompt
 
 ```text
-Want 5% off next time? Scan here and join our Market Club.
+Want $5 off next time? Scan here and join our Market Club.
 ```
 
 ---
@@ -424,9 +424,8 @@ Twilio is the SMS provider for this lightweight setup.
 Where things stand:
 
 - Twilio account is set up.
-- Toll-free SMS verification is in progress.
-- The app is ready to send the welcome SMS once approval is complete.
-- Production SMS marketing should wait for Twilio approval.
+- Twilio welcome SMS is live for SMS-opted-in customers.
+- The app records the welcome SMS on the Shopify customer after Twilio accepts it.
 
 Cost model:
 

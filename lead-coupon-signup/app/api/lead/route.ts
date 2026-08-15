@@ -53,6 +53,20 @@ export async function POST(request: Request) {
       welcomeSmsTagged,
     });
   } catch (error) {
+    if (isPhoneAlreadyRegisteredError(error)) {
+      const message = "This phone number is already registered.";
+
+      return NextResponse.json(
+        {
+          ok: false,
+          code: "PHONE_ALREADY_REGISTERED",
+          error: message,
+          errors: { phone: message },
+        },
+        { status: 409 },
+      );
+    }
+
     console.error("Lead submission failed", error);
     return NextResponse.json(
       {
@@ -67,4 +81,8 @@ export async function POST(request: Request) {
 
 export function GET() {
   return NextResponse.json({ ok: false, error: "Method not allowed." }, { status: 405 });
+}
+
+function isPhoneAlreadyRegisteredError(error: unknown): boolean {
+  return error instanceof Error && /phone has already been taken/i.test(error.message);
 }

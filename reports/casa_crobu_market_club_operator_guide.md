@@ -3,7 +3,7 @@
 **Date:** 2026-06-14  
 **Purpose:** Give Casa Crobu a practical guide for using and maintaining the Market Club signup system.
 
-This guide covers the current lightweight system: a Vercel-hosted signup page, Shopify customer tags/notes, and Make-based notification or message workflows.
+This guide covers the current lightweight system: a Vercel-hosted signup page, Shopify customer tags/notes, and direct Twilio SMS delivery.
 
 ---
 
@@ -15,7 +15,7 @@ When a customer submits the Market Club form:
 2. The app creates or updates a Shopify customer.
 3. The app adds Shopify tags for audience, offer, source, location, campaign, and opt-ins.
 4. The app writes a customer note with submitted fields and timestamp.
-5. The app sends the submission to Make for SMS, email, and internal notifications.
+5. When a customer opts into SMS, the app sends the welcome message through Twilio.
 
 ---
 
@@ -25,7 +25,7 @@ Every Market Club signup receives:
 
 ```text
 market_club
-welcome_offer_5_off_20
+welcome_offer_5_off
 casa_crobu
 source_custom_landing_page
 ```
@@ -115,10 +115,10 @@ The generic form location dropdown currently includes:
 - Thornton
 - Westminster
 
-To add, remove, or rename dropdown locations, update `marketLocationOptions` in:
+To add, remove, or rename dropdown locations, update `MARKET_LOCATIONS` in:
 
 ```text
-lead-coupon-signup/app/page.tsx
+lead-coupon-signup/lib/market-locations.ts
 ```
 
 Then redeploy the Vercel app.
@@ -148,7 +148,7 @@ Expected Shopify tags:
 
 ```text
 market_club
-welcome_offer_5_off_20
+welcome_offer_5_off
 casa_crobu
 source_custom_landing_page
 source_location_boulder_farmers_market
@@ -164,7 +164,7 @@ campaign_summer_2026
 2. Open **Customers**.
 3. Search or filter by tag:
    - `market_club`
-   - `welcome_offer_5_off_20`
+   - `welcome_offer_5_off`
    - `source_channel_booth_code`
    - `source_channel_product_sticker`
    - `source_location_south_pearl_street_market`
@@ -181,10 +181,10 @@ If the offer changes, update:
 1. Landing page copy in `lead-coupon-signup/app/page.tsx`
 2. Fine print in `lead-coupon-signup/app/page.tsx`
 3. Shopify tag in `lead-coupon-signup/lib/shopify.ts`
-4. SMS/email copy in Make
+4. SMS copy in `lead-coupon-signup/lib/twilio.ts` and any separate Shopify Email campaign copy
 5. QR/signage copy
 
-For example, if the offer changes from `5% off $20+` to `10% off $30+`, create a new offer tag instead of reusing the old one:
+For example, if the offer changes from `$5 off $29+` to `$10 off $30+`, create a new offer tag instead of reusing the old one:
 
 ```text
 welcome_offer_10_off_30
@@ -192,20 +192,16 @@ welcome_offer_10_off_30
 
 ---
 
-## 9. Make Workflow Checklist
+## 9. SMS Delivery And Reporting
 
-The Make workflow should:
+The app sends the welcome SMS directly through Twilio when `smsOptIn` is true and a phone number is present. The app records `welcome_sms_sent` on the Shopify customer after Twilio accepts the message.
 
-1. Receive the webhook payload.
-2. If `smsOptIn` is true and `phone` exists, send the SMS code.
-3. If `emailOptIn` is true and `email` exists, send the email code.
-4. Optionally send an internal notification.
-5. Log or store the event for debugging.
+Use Shopify to review Market Club customers, offer/source/location tags, and discount redemption. Use Twilio's Messaging dashboard to review delivery and reply activity.
 
 Recommended SMS:
 
 ```text
-Grazie from Casa Crobu. Use code MARKET5 for 5% off your next market order of $20 or more. Show this text at the booth. Reply STOP to opt out.
+Benvenuto to the Casa Crobu Market Club. Use code MARKET5 for $5 off your next lasagna or purchase of $29 or more. To redeem at the booth, give the phone number you used to sign up. Reply STOP to opt out.
 ```
 
 ---

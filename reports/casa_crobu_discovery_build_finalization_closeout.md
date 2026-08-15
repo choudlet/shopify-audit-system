@@ -3,7 +3,7 @@
 **Date:** 2026-06-14  
 **Purpose:** Close out the current work order: discovery, scope confirmation, launch approach, and finalization of the Phase 1 build plan.
 
-This document is not a Phase 2 launch support scope. It summarizes what has been clarified and prepared so Casa Crobu can decide whether to proceed into launch activation, QA, campaign setup, and ongoing operations as a separate next phase.
+This document is not a Phase 2 launch-support scope. It records the completed Phase 1 capture build and the remaining operating work Casa Crobu owns after launch.
 
 ---
 
@@ -13,11 +13,11 @@ Kelly,
 
 I’m at a good closeout point for the first phase of the build and the product discovery portion.
 
-The launch approach is now defined: Casa Crobu Market Club will use a lightweight signup form at `/pages/market-club`, create or update Shopify customers, add source/location/offer/opt-in tags, and prepare SMS/email delivery around the `MARKET5` welcome offer.
+The launch approach is live: Casa Crobu Market Club uses a lightweight signup form at `/pages/market-club`, creates or updates Shopify customers, adds source/location/offer/opt-in tags, and sends the `MARKET5` welcome offer by SMS when a customer opts in.
 
-I have also confirmed the recommended technical path: Shopify remains the customer and segmentation system, the custom form handles capture and tagging, Twilio is the lightweight SMS provider, and email can be managed through Shopify Email/segments or a simple welcome-email workflow.
+Shopify remains the customer and segmentation system, the custom form handles capture and tagging, Twilio sends the live SMS welcome message, and Shopify Email can manage future email campaigns for email-opted-in customers.
 
-The remaining work is now launch activation and operations, not discovery/scope definition. That includes Twilio approval completion, production QA, final QR/signage links, SMS reply handling, welcome email setup, and staff redemption rollout.
+The remaining work is operational: monitoring the live capture system, keeping the QR/signage links current, maintaining staff redemption instructions, and reviewing Shopify and Twilio reporting.
 
 ---
 
@@ -26,11 +26,11 @@ The remaining work is now launch activation and operations, not discovery/scope 
 | Work order item | Status |
 |---|---|
 | Kickoff and scope confirmation | Complete |
-| Collection of required account access, brand assets, and approvals | Substantially complete; Twilio approval still in process |
-| Confirmation of launch offer and signup approach | Complete, pending your final approval |
+| Collection of required account access, brand assets, and approvals | Complete for the live capture system |
+| Confirmation of launch offer and signup approach | Complete |
 | Confirmation of email and SMS capture plan | Complete |
 | Implementation plan and workflow walkthrough | Complete |
-| Finalize launch plan for the Phase 1 build | Complete as a plan; activation is a separate next phase |
+| Finalize launch plan for the Phase 1 build | Complete; the capture system is live |
 
 ---
 
@@ -78,7 +78,7 @@ On submit:
 2. The backend creates or updates a Shopify customer.
 3. The backend adds tags.
 4. The backend adds a customer note with submission details.
-5. The backend will trigger SMS/email/notification workflows.
+5. The backend sends the welcome SMS through Twilio when the customer opts into SMS.
 
 Shopify Admin credentials remain server-side in Vercel.
 
@@ -90,7 +90,7 @@ Core tags:
 
 ```text
 market_club
-welcome_offer_5_off_20 (dependendant on actual offer that you decide)
+welcome_offer_5_off
 source_custom_landing_page
 ```
 
@@ -150,7 +150,7 @@ Recommended offer:
 
 ```text
 MARKET5
-5% off one market order of $20 or more
+$5 off your next lasagna or market order of $29 or more
 One use per customer
 ```
 
@@ -163,7 +163,7 @@ Recommended redemption:
 
 Recommended staff instruction:
 
-> If a customer shows MARKET5 from the Market Club text or email, apply 5% off one market order of $20 or more.
+> If a customer shows MARKET5 from the Market Club text, apply $5 off their next lasagna or market order of $29 or more.
 
 ---
 
@@ -180,14 +180,14 @@ Twilio
 Recommended SMS:
 
 ```text
-Grazie from Casa Crobu. Use code MARKET5 for 5% off your next market order of $20 or more. Show this text at the booth. Reply STOP to opt out.
+Benvenuto to the Casa Crobu Market Club. Use code MARKET5 for $5 off your next lasagna or purchase of $29 or more. To redeem at the booth, give the phone number you used to sign up. Reply STOP to opt out.
 ```
 
 Current status:
 
-- Direct Twilio SMS delivery has been selected for the build plan.
-- Toll-free verification/approval is in process.
-- Production SMS sending should wait until Twilio approves the toll-free number.
+- Direct Twilio SMS delivery is live.
+- The app sends the welcome SMS after a customer gives SMS consent.
+- The inbound webhook records STOP, START, and HELP replies and syncs opt-out status back to Shopify.
 
 Twilio's documentation says toll-free numbers cannot send SMS messages to the U.S. and Canada until toll-free verification is completed and approved. Verification can be submitted through the Twilio Console, and status can be checked in Trust Hub or on the number's Regulatory Information page.
 
@@ -241,7 +241,7 @@ Cost posture:
 - Shopify remains the customer database and email segmentation layer.
 - Vercel hosts the signup form.
 - Twilio is usage-based for SMS.
-- Make can remain optional for notifications/logging.
+- Google Sheets logging can remain optional for inbound and operator-SMS audit history.
 - A heavier platform such as Klaviyo, Postscript, Attentive, or SimpleTexting can be revisited if the Market Club proves volume and revenue.
 
 Source: Twilio U.S. SMS Pricing  
@@ -257,7 +257,7 @@ Recommended framing:
 
 To move into launch activation, Kelly should confirm:
 
-1. Final offer: `MARKET5`, 5% off one market order of $20 or more.
+1. Final offer: `MARKET5`, $5 off your next lasagna or market order of $29 or more.
 2. Final redemption process: show SMS/email at booth, staff applies discount.
 3. `/pages/market-club` as the website destination.
 4. Initial source channels:
@@ -276,14 +276,9 @@ To move into launch activation, Kelly should confirm:
 
 The next phase would be activation and operations, such as:
 
-- Twilio approval follow-through
-- production SMS test
-- inbound SMS reply forwarding
-- welcome email setup
-- QR code generation
-- final Shopify page QA
-- market-specific QR/signage package
-- staff redemption instructions
+- Shopify reporting dashboard for Market Club customers, offer redemptions, and source/location tags
+- Twilio Messaging dashboard review for delivery and reply activity
+- optional welcome-email campaign setup
 - first-week launch monitoring
 - reporting on signups by source/location/channel
 

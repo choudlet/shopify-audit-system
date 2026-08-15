@@ -15,7 +15,7 @@ struct Market {
   let fileStem: String
 }
 
-let signupBaseURL = "https://shopify-audit-system.vercel.app"
+let signupBaseURL = "https://casacrobu.com/pages/market-club"
 let campaign = "summer-2026"
 let markets = [
   Market(location: "Belleview Station DTC", fileStem: "belleview_station_dtc"),

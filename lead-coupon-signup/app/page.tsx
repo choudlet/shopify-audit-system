@@ -8,6 +8,12 @@ import { validateLeadPayload, type LeadPayload } from "@/lib/validation";
 
 type FieldErrors = Partial<Record<keyof LeadPayload | "contact" | "channel", string>>;
 
+type LeadApiResponse = {
+  ok?: boolean;
+  error?: string;
+  errors?: FieldErrors;
+};
+
 const initialForm: LeadPayload = {
   firstName: "",
   lastName: "",
@@ -73,10 +79,15 @@ function LeadSignupPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(result.data),
       });
-      const body = (await response.json()) as { ok?: boolean; error?: string };
+      const body = (await response.json()) as LeadApiResponse;
 
       if (!response.ok || !body.ok) {
-        throw new Error(body.error || "Something went wrong. Please try again.");
+        if (body.errors && Object.keys(body.errors).length > 0) {
+          setErrors(body.errors);
+        } else {
+          setSubmitError(body.error || "Something went wrong. Please try again.");
+        }
+        return;
       }
 
       setSubmitted(true);

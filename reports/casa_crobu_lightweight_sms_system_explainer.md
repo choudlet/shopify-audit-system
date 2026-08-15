@@ -13,9 +13,9 @@ For the first market-capture pilot, the recommended path is to use a lightweight
 
 - **Landing page:** the custom Casa Crobu signup page
 - **Customer record:** Shopify customer create/update
-- **Workflow trigger:** Make webhook
+- **Workflow trigger:** the Vercel-hosted server-side signup route
 - **SMS infrastructure:** Twilio
-- **Optional internal alerts:** Make + Twilio or Make's SMS modules
+- **Optional internal alerts and audit log:** Google Sheets or a later workflow integration
 
 This gives Casa Crobu the important parts now: a clean customer-facing form, Shopify customer capture, source tags, coupon delivery, and internal notifications. It avoids paying for a larger SMS/lifecycle platform before there is enough market-list volume to justify it.
 
@@ -51,7 +51,7 @@ That means a small pilot can stay inexpensive:
 | 500 outbound SMS segments | About `$4.15` |
 | 1,000 outbound SMS segments | About `$8.30` |
 
-There will still be other costs, such as a Twilio phone number, A2P 10DLC registration/campaign fees if using a 10DLC number, carrier pass-through fees, and any Make/Vercel usage. But the key difference is that Casa Crobu does not need to commit to a heavier monthly SMS platform until the list and revenue signal justify it.
+There will still be other costs, such as a Twilio phone number, A2P 10DLC registration/campaign fees if using a 10DLC number, carrier pass-through fees, and Vercel usage. But the key difference is that Casa Crobu does not need to commit to a heavier monthly SMS platform until the list and revenue signal justify it.
 
 Cost framing for Kelly:
 
@@ -121,52 +121,38 @@ Recommended Phase 1 provider stack:
 |---|---|---|
 | Landing page/backend | Vercel + Next.js | Hosts the signup page and secure API route |
 | Customer database | Shopify | Creates/updates customer profiles, tags, notes |
-| Workflow automation | Make | Receives signup event and routes actions |
+| Workflow automation | Next.js server-side route | Validates the signup and sends the welcome SMS after Shopify customer sync |
 | SMS infrastructure | Twilio | Sends SMS messages |
-| Optional email | Shopify Email, Make, or later Klaviyo | Sends coupon or market updates by email |
+| Optional email | Shopify Email or later Klaviyo | Sends campaign updates by email |
 
 In plain English:
 
-> Twilio is the phone/SMS pipe. Make is the workflow glue. Shopify is the customer record. The custom landing page is the capture experience.
+> Twilio is the phone/SMS pipe. Shopify is the customer record. The custom landing page is the capture experience, and its server-side route sends the welcome SMS directly through Twilio.
 
 ---
 
 ## How Twilio Would Be Used
 
-### Phase 1: Simple Make + Twilio Flow
+### Current: Direct Twilio Flow
 
 The simplest setup:
 
 1. Customer submits the Casa Crobu signup form.
 2. The app creates or updates the Shopify customer.
-3. The app sends a webhook to Make.
-4. Make checks whether the customer provided a phone number and opted into SMS.
-5. Make sends an SMS through Twilio.
-6. Make optionally sends an internal notification to Casa Crobu.
+3. The app checks whether the customer provided a phone number and opted into SMS.
+4. The server-side route sends the welcome message through Twilio.
+5. After Twilio accepts the message, the app adds the `welcome_sms_sent` Shopify tag.
+6. The Twilio inbound webhook handles STOP, START, and HELP preference replies and can log them to Google Sheets.
 
 Example customer SMS:
 
-> Grazie from Casa Crobu. Use code MARKET5 for 5% off your next market order of $20 or more. Show this text at the booth. Reply STOP to opt out.
+> Benvenuto to the Casa Crobu Market Club. Use code MARKET5 for $5 off your next lasagna or purchase of $29 or more. To redeem at the booth, give the phone number you used to sign up. Reply STOP to opt out.
 
 Example internal SMS:
 
 > New Casa Crobu market signup: Maria Rossi. Market: South Pearl Street. Contact: maria@example.com / +15551234567.
 
-This is the easiest first version because Make can handle the Twilio action without building extra SMS code immediately.
-
-### Phase 2: Direct Twilio Integration
-
-If the pilot grows, the app can send SMS directly from the serverless backend using Twilio's API. That would allow more control over:
-
-- message templates
-- retry behavior
-- event logging
-- delivery status webhooks
-- STOP/HELP handling
-- message history
-- campaign-specific analytics
-
-This is not required for the first demo or first market test. Make + Twilio is enough to prove the flow.
+This keeps the flow lightweight without adding a separate workflow platform. Shopify remains the customer record, Twilio remains the messaging provider, and the app owns the signup-to-welcome-SMS handoff.
 
 ---
 
@@ -190,7 +176,7 @@ The MVP should not import or text historical phone numbers unless Casa Crobu can
 
 Use this language with Kelly:
 
-> My recommendation is not to over-buy SMS software before we know the list will work. For Phase 1, we can use a lightweight system: the landing page captures the signup, Shopify stores the customer, Make routes the workflow, and Twilio sends the SMS. That keeps fixed costs low, gives us control over the exact messages, and lets us test the market-capture loop quickly. If the pilot proves that people opt in and redeem offers, we can later move into Klaviyo, SimpleTexting, or a more advanced SMS platform with better evidence.
+> My recommendation is not to over-buy SMS software before we know the list will work. For Phase 1, the landing page captures the signup, Shopify stores the customer, and the app sends the SMS through Twilio. That keeps fixed costs low, gives us control over the exact messages, and lets us test the market-capture loop quickly. If the pilot proves that people opt in and redeem offers, we can later move into Klaviyo, SimpleTexting, or a more advanced SMS platform with better evidence.
 
 ---
 

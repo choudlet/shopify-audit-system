@@ -111,4 +111,4 @@ Run each market like a growth channel:
 
 ## Casa Crobu Lead/Coupon Landing Page
 
-The standalone Next.js landing page lives in [`lead-coupon-signup`](lead-coupon-signup). See [`lead-coupon-signup/README.md`](lead-coupon-signup/README.md) for local setup, Shopify custom app setup, Make webhook setup, Vercel deployment, and Shopify linking notes.
+The standalone Next.js landing page lives in [`lead-coupon-signup`](lead-coupon-signup). See [`lead-coupon-signup/README.md`](lead-coupon-signup/README.md) for local setup, Shopify custom app setup, direct Twilio configuration, Vercel deployment, and Shopify linking notes.
