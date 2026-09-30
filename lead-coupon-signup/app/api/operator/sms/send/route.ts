@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { appendInboundSmsLog } from "@/lib/google-sheets";
+import { authenticateOperatorSms, cleanOperatorSmsText } from "@/lib/operator-sms";
 import { sendSms } from "@/lib/twilio";
 import { normalizePhone } from "@/lib/validation";
 
@@ -8,6 +9,7 @@ type OperatorSmsPayload = {
   message?: unknown;
   password?: unknown;
   operator?: unknown;
+  test?: unknown;
 };
 
 export async function POST(request: Request) {
@@ -19,19 +21,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "Invalid JSON payload." }, { status: 400 });
   }
 
-  const configuredPassword = process.env.OPERATOR_SMS_PASSWORD;
+  const authentication = authenticateOperatorSms(json.password);
 
-  if (!configuredPassword) {
-    return NextResponse.json({ ok: false, error: "Operator SMS is not configured." }, { status: 503 });
-  }
-
-  if (typeof json.password !== "string" || json.password !== configuredPassword) {
-    return NextResponse.json({ ok: false, error: "Invalid operator password." }, { status: 401 });
+  if (!authentication.ok) {
+    return NextResponse.json(
+      { ok: false, error: authentication.error },
+      { status: authentication.status },
+    );
   }
 
   const phone = normalizePhone(json.phone);
-  const message = cleanText(json.message, 1000);
-  const operator = cleanText(json.operator, 80);
+  const message = cleanOperatorSmsText(json.message, 1000);
+  const operator = cleanOperatorSmsText(json.operator, 80);
+  const isTest = json.test === true;
 
   if (!phone || phone.length < 10) {
     return NextResponse.json({ ok: false, error: "Enter a valid mobile number." }, { status: 400 });
@@ -51,6 +53,7 @@ export async function POST(request: Request) {
       messageSid: sms.sid || "",
       syncStatus: "send_failed",
       error: sms.reason || "Twilio did not accept the message.",
+      isTest,
     });
 
     return NextResponse.json({ ok: false, error: "Twilio did not accept the message." }, { status: 502 });
@@ -63,6 +66,7 @@ export async function POST(request: Request) {
     messageSid: sms.sid || "",
     syncStatus: "sent",
     error: "",
+    isTest,
   });
 
   return NextResponse.json({ ok: true, messageSid: sms.sid });
@@ -72,10 +76,6 @@ export function GET() {
   return NextResponse.json({ ok: false, error: "Method not allowed." }, { status: 405 });
 }
 
-function cleanText(value: unknown, maxLength: number): string {
-  return typeof value === "string" ? value.trim().replace(/\s+/g, " ").slice(0, maxLength) : "";
-}
-
 async function appendOutboundSmsLogSafely({
   phone,
   message,
@@ -83,6 +83,7 @@ async function appendOutboundSmsLogSafely({
   messageSid,
   syncStatus,
   error,
+  isTest,
 }: {
   phone: string;
   message: string;
@@ -90,6 +91,7 @@ async function appendOutboundSmsLogSafely({
   messageSid: string;
   syncStatus: string;
   error: string;
+  isTest: boolean;
 }): Promise<void> {
   try {
     await appendInboundSmsLog({
@@ -97,7 +99,11 @@ async function appendOutboundSmsLogSafely({
       fromPhone: phone,
       body: message,
       optOutType: "",
-      action: operator ? `outbound_custom:${operator}` : "outbound_custom",
+      action: operator
+        ? `${isTest ? "outbound_test" : "outbound_custom"}:${operator}`
+        : isTest
+          ? "outbound_test"
+          : "outbound_custom",
       messageSid,
       customerFound: null,
       shopifyCustomerId: "",

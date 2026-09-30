@@ -115,9 +115,14 @@ The app includes a protected operator page at `/operator/sms` for sending custom
    ```
 
 2. Redeploy after setting the env var.
-3. Open `/operator/sms`, enter the operator name, password, customer phone number, and message.
+3. Open `/operator/sms` and enter the operator name and password.
+4. Choose one of the sending paths:
+   - **Shopify audience:** select all current Market Club SMS subscribers, customers who have not received the `market5_redeemed` tag, or one market location. Load the live audience count, send a test, then review and confirm the campaign.
+   - **One customer:** enter one customer phone number and send the message directly.
 
-Outbound operator messages are logged to the Google Sheet with `action` set to `outbound_custom` or `outbound_custom:{operator}`. The `from_phone` column stores the customer phone number for both inbound and outbound rows.
+Campaign audiences are rebuilt from Shopify before every send and always require `sms_subscription_status = 'SUBSCRIBED'`. If the live count changed after the operator previewed it, the send stops and asks the operator to load the audience again.
+
+When the Google Sheet log is configured, outbound operator messages use `action` values of `outbound_custom`, `outbound_test`, or `outbound_campaign`, followed by the operator and audience when present. The `from_phone` column stores the customer phone number for both inbound and outbound rows. Twilio also keeps its normal message record for each recipient.
 
 ## Deploy to Vercel
 

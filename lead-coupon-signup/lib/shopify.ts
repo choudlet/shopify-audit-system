@@ -1,4 +1,4 @@
-import { prefixedTag, type NormalizedLeadPayload } from "./validation";
+import { normalizePhone, prefixedTag, type NormalizedLeadPayload } from "./validation";
 
 const SHOPIFY_API_VERSION = "2026-04";
 const WELCOME_OFFER_TAG = "welcome_offer_5_off";
@@ -101,6 +101,25 @@ const FIND_CUSTOMER_QUERY = `
           note
           tags
         }
+      }
+    }
+  }
+`;
+
+const SMS_AUDIENCE_MEMBERS_QUERY = `
+  query SmsAudienceMembers($query: String!, $after: String) {
+    customerSegmentMembers(first: 250, after: $after, query: $query) {
+      edges {
+        node {
+          id
+          defaultPhoneNumber {
+            phoneNumber
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
       }
     }
   }
@@ -230,6 +249,56 @@ async function updateExistingCustomer(
 
 export async function markCustomerWelcomeSmsSent(customerId: string): Promise<void> {
   await addCustomerTags(customerId, [WELCOME_SMS_SENT_TAG]);
+}
+
+export type SmsAudienceRecipient = {
+  customerId: string;
+  phone: string;
+};
+
+type SmsAudienceMembersResult = {
+  customerSegmentMembers: {
+    edges: Array<{
+      node: {
+        id: string;
+        defaultPhoneNumber?: { phoneNumber: string } | null;
+      };
+    }>;
+    pageInfo: {
+      hasNextPage: boolean;
+      endCursor?: string | null;
+    };
+  };
+};
+
+export async function getSmsAudienceRecipients(query: string): Promise<SmsAudienceRecipient[]> {
+  const recipients = new Map<string, SmsAudienceRecipient>();
+  let after: string | null = null;
+  let hasNextPage = true;
+
+  while (hasNextPage) {
+    const result: SmsAudienceMembersResult = await shopifyGraphql<SmsAudienceMembersResult>(
+      SMS_AUDIENCE_MEMBERS_QUERY,
+      { query, after },
+    );
+
+    for (const { node } of result.customerSegmentMembers.edges) {
+      const phone = normalizePhone(node.defaultPhoneNumber?.phoneNumber);
+
+      if (phone && phone.length >= 10 && !recipients.has(phone)) {
+        recipients.set(phone, { customerId: node.id, phone });
+      }
+    }
+
+    hasNextPage = result.customerSegmentMembers.pageInfo.hasNextPage;
+    after = result.customerSegmentMembers.pageInfo.endCursor || null;
+
+    if (hasNextPage && !after) {
+      throw new Error("Shopify did not return a cursor for the next SMS audience page.");
+    }
+  }
+
+  return Array.from(recipients.values());
 }
 
 type SmsPreferenceEvent = {
