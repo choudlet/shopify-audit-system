@@ -23,11 +23,19 @@ const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
 const GOOGLE_SHEETS_SCOPE = "https://www.googleapis.com/auth/spreadsheets";
 
 export async function appendInboundSmsLog(log: InboundSmsLog): Promise<void> {
+  await appendSmsLogs([log]);
+}
+
+export async function appendSmsLogs(logs: InboundSmsLog[]): Promise<boolean> {
+  if (logs.length === 0) {
+    return true;
+  }
+
   const spreadsheetId = process.env.GOOGLE_SHEETS_SMS_LOG_SPREADSHEET_ID;
   const sheetName = process.env.GOOGLE_SHEETS_SMS_LOG_SHEET_NAME || "Inbound SMS";
 
   if (!spreadsheetId) {
-    return;
+    return false;
   }
 
   const accessToken = await getGoogleAccessToken();
@@ -43,20 +51,18 @@ export async function appendInboundSmsLog(log: InboundSmsLog): Promise<void> {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        values: [
-          [
-            log.receivedAt,
-            log.fromPhone,
-            log.body,
-            log.optOutType,
-            log.action,
-            log.messageSid,
-            log.customerFound === null ? "" : String(log.customerFound),
-            log.shopifyCustomerId,
-            log.syncStatus,
-            log.error,
-          ],
-        ],
+        values: logs.map((log) => [
+          log.receivedAt,
+          log.fromPhone,
+          log.body,
+          log.optOutType,
+          log.action,
+          log.messageSid,
+          log.customerFound === null ? "" : String(log.customerFound),
+          log.shopifyCustomerId,
+          log.syncStatus,
+          log.error,
+        ]),
       }),
     },
   );
@@ -65,6 +71,8 @@ export async function appendInboundSmsLog(log: InboundSmsLog): Promise<void> {
     const errorText = await response.text();
     throw new Error(`Google Sheets append failed: ${response.status} ${errorText}`);
   }
+
+  return true;
 }
 
 async function getGoogleAccessToken(): Promise<string> {

@@ -30,7 +30,7 @@ export async function sendSms(to: string, message: string): Promise<SmsResult> {
 
   if (!accountSid || !authToken || !messagingServiceSid) {
     console.error("Twilio environment variables are not configured.");
-    return { sent: false, skipped: false };
+    return { sent: false, skipped: false, reason: "Twilio is not configured." };
   }
 
   const body = new URLSearchParams({
@@ -56,12 +56,20 @@ export async function sendSms(to: string, message: string): Promise<SmsResult> {
         status: response.status,
         message: result.message || "Unknown Twilio error",
       });
-      return { sent: false, skipped: false };
+      return {
+        sent: false,
+        skipped: false,
+        reason: result.message || `Twilio returned ${response.status}.`,
+      };
     }
 
     return { sent: true, skipped: false, sid: result.sid };
   } catch (error) {
     console.error("Twilio SMS request failed", error);
-    return { sent: false, skipped: false };
+    return {
+      sent: false,
+      skipped: false,
+      reason: error instanceof Error ? error.message : "Twilio request failed.",
+    };
   }
 }
